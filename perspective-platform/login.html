@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perspective Platform - Login</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Perspective Platform</h1>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="news.html">News</a>
+      <a href="account.html">Account</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content">
+      <h2>Login to the Perspective Platform</h2>
+      <p>Welcome back! Log in to access your account.</p>
+      <form action="/login" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
