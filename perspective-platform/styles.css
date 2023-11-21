@@ -1,4 +1,25 @@
 /* styles.css */
+/* Add this to your stylesheet */
+.header-link {
+    color: white;
+    text-decoration: none; /* Optional: Removes underlines from links */
+}
+
+/* Style for visited links */
+.header-link:visited {
+    color: white;
+}
+
+/* Style for hover effect */
+.header-link:hover {
+    color: #ddd; /* Optional: Change to a different color on hover */
+}
+
+/* Assuming your header links have a class named 'header-link' */
+.header-link {
+    color: white !important;
+}
+
 
 body {
     margin: 0;
@@ -49,4 +70,32 @@ button {
     padding: 8px;
     margin: 4px;
     cursor: pointer;
+}
+
+/* styles.css */
+
+/* Existing styles... */
+
+/* Styles for upvote and downvote buttons */
+.upvote-button, .downvote-button {
+    background-color: #4CAF50; /* Green background for upvote */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.downvote-button {
+    background-color: #f44336; /* Red background for downvote */
+}
+
+/* Hover effect for buttons */
+.upvote-button:hover, .downvote-button:hover {
+    opacity: 0.8;
 }

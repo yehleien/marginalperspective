@@ -1,110 +1,64 @@
-<!-- account.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account - Perspective Platform</title>
-    <!-- Link your styles.css file here -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Perspective Platform</h1>
+        <h1>liminal</h1>
         <nav>
-            <a href="home.html">Home</a>
-            <a href="account.html">Account</a>
-            <a href="news.html">News</a>
-            <a href="index.html">Logout</a>
+            <a href="home.html" class="header-link">Home</a>
+            <a href="account.html" class="header-link active">Account</a>
+            <a href="index.html" class="header-link">Logout</a>
         </nav>
     </header>
 
     <div class="center-container">
         <h2>Your Account</h2>
         <p>Welcome to the Perspective Platform! Here, you can manage your perspectives.</p>
+        <div id="welcomeMessage"></div>
 
-        <!-- Table for Perspectives -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Perspective</th>
-                    <th>Verified</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Add perspectives dynamically here -->
-                <tr>
-                    <td>Your Perspective 1</td>
-                    <td>✅</td>
-                    <td><button onclick="deletePerspective(1)">Delete</button></td>
-                </tr>
-                <tr>
-                    <td>Your Perspective 2</td>
-                    <td>✅</td>
-                    <td><button onclick="deletePerspective(2)">Delete</button></td>
-                </tr>
-                <!-- Add more rows as needed -->
-            </tbody>
-        </table>
 
-        <!-- Form to Add Perspectives -->
-        <form id="addPerspectiveForm">
-            <label for="newPerspective">Add a New Perspective:</label>
-            <input type="text" id="newPerspective" name="newPerspective" required>
-            <button type="button" onclick="addPerspective()">Add</button>
+        <!-- Displaying User Perspectives -->
+        <div id="perspectives">
+            <h3>Your Perspectives</h3>
+            <p><strong>Age:</strong> <span id="ageDisplay">Loading...</span></p>
+            <p><strong>Nationality:</strong> <span id="nationalityDisplay">Loading...</span></p>
+            <p><strong>Sex:</strong> <span id="sexDisplay">Loading...</span></p>
+        </div>
+        
+        <!-- Form to Update Age -->
+        <form id="ageForm">
+            <label for="age">Update Age:</label>
+            <input type="number" id="age" placeholder="Enter your age">
+            <button type="submit">Update Age</button>
+        </form>
+
+        <!-- Form to Update Nationality -->
+        <form id="nationalityForm">
+            <label for="nationality">Update Nationality:</label>
+            <input type="text" id="nationality" placeholder="Enter your nationality">
+            <button type="submit">Update Nationality</button>
+        </form>
+
+        <!-- Form to Update Sex -->
+        <form id="sexForm">
+            <label for="sex">Update Sex:</label>
+            <select id="sex">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+            </select>
+            <button type="submit">Update Sex</button>
         </form>
     </div>
 
-    <script>
-      // Function to add a new perspective
-      function addPerspective() {
-          const newPerspective = document.getElementById('newPerspective').value;
-          const email = "example@email.com"; // Replace with the actual email of the logged-in user
-  
-          // Use the actual route for adding perspectives
-          fetch('/add_perspective', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  email,
-                  perspective: newPerspective,
-              }),
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Handle the response or update the table if needed
-              console.log(data);
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
-      }
-  
-      // Function to delete a perspective
-      function deletePerspective(rowNum) {
-          const email = "example@email.com"; // Replace with the actual email of the logged-in user
-  
-          // Use the actual route for deleting perspectives
-          fetch(`/delete_perspective/${rowNum}`, {
-              method: 'DELETE',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email }),
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Handle the response or update the table if needed
-              console.log(data);
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
-      }
-  </script>
+ 
+
+
     <script src="account.js"></script>
 </body>
 </html>

@@ -10,10 +10,10 @@
   <header>
     <h1>Perspective Platform</h1>
     <nav>
-      <a href="home.html">Home</a>
-      <a href="news.html">News</a>
-      <a href="account.html">Account</a>
-      <a href="login.html">Login</a>
+      <a href="home.html" class="header-link">Home</a>
+            <a href="account.html" class="header-link">Account</a>
+            <a href="news.html" class="header-link">News</a>
+            <a href="index.html" class="header-link">Logout</a>
     </nav>
   </header>
 
@@ -21,7 +21,7 @@
     <div class="content">
       <h2>Login to the Perspective Platform</h2>
       <p>Welcome back! Log in to access your account.</p>
-      <form action="/login" method="post">
+      <form <form id="loginForm">>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
 
@@ -32,5 +32,6 @@
       </form>
     </div>
   </main>
+  <script src="perspective-platform/login.js"></script>
 </body>
 </html>

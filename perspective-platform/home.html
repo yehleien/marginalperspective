@@ -4,23 +4,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Perspective Platform</title>
-    <!-- Link your styles.css file here -->
+    <title>Home - liminal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Perspective Platform</h1>
+        <h1>liminal</h1>
         <nav>
-            <a href="home.html">Home</a>
-            <a href="account.html">Account</a>
-            <a href="news.html">News</a>
-            <a href="index.html">Logout</a>
+            <a href="home.html" class="header-link">Home</a>
+            <a href="account.html" class="header-link">Account</a>
+            <a href="index.html" class="header-link">Logout</a>
         </nav>
     </header>
 
     <div class="center-container">
-        <h2>HOME</h2>
+        <h2>Home</h2>
+        <p>Welcome to the Perspective Platform! Share your thoughts below.</p>
+
+        <!-- Comment Form -->
+        <form id="commentForm">
+            <label for="commentText">Add a Comment:</label>
+            <input type="text" id="commentText" name="commentText" required>
+            <button type="button" onclick="addComment()">Add</button>
+        </form>
+
+        <!-- Comments Section -->
+        <div>
+            <h2>Comments</h2>
+            <ul id="commentsList">
+                <!-- Comments will be displayed here -->
+            </ul>
+        </div>
     </div>
+
+    <script>
+        // Function to add a comment
+        function addComment() {
+            const commentText = document.getElementById('commentText').value;
+
+            // Use the actual route for adding comments
+            fetch('/add_comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: commentText,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response or update the comments list
+                console.log(data);
+
+                // Clear the comment textarea
+                document.getElementById('commentText').value = '';
+
+                // Fetch and display comments again to show the new comment
+                fetchAndDisplayComments();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Function to fetch and display comments
+        function fetchAndDisplayComments() {
+            // Use the actual route to fetch comments
+            fetch('/get_comments')
+            .then(response => response.json())
+            .then(data => {
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = ''; // Clear existing comments
+
+                data.comments.forEach(comment => {
+                    const li = document.createElement('li');
+                    li.textContent = comment.text;
+                    commentsList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Initial fetch and display comments
+        fetchAndDisplayComments();
+    </script>
 </body>
 </html>
