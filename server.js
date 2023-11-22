@@ -24,18 +24,9 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     perspectives: {
-        age: {
-            type: String,
-            default: "default value for age"
-        },
-        sex: {
-            type: String,
-            default: "default value for sex"
-        },
-        nationality: {
-            type: String,
-            default: "default value for nationality"
-        }
+        age: String,
+        sex: String,
+        nationality: String
     }
 });
 
@@ -107,133 +98,49 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Route to add a new perspective
-app.post('/add_perspective', async (req, res) => {
+app.get('/get_user_perspectives', async (req, res) => {
     try {
-        // Log request for debugging
-        console.log('Request body:', req.body);
-        console.log('Cookies:', req.cookies);
-
-        // Extract email from cookies or request body
-        const email = req.cookies.user_email || req.body.email;
-        console.log('Extracted email:', email);
-
+        const email = req.cookies['user_email'];
         if (!email) {
-            return res.status(400).json({ error: 'Email not provided' });
+            return res.status(400).json({ error: 'User not authenticated' });
         }
 
-        const { perspectiveKey, perspectiveValue } = req.body;
-
-        // Log perspective data for debugging
-        console.log('Perspective Key:', perspectiveKey);
-        console.log('Perspective Value:', perspectiveValue);
-
-        // Find the user by email
-        const user = await User.findOne({ email: email });
-        console.log('User found:', user);
-
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Add or update the perspective in the user's perspectives object
-        user.perspectives = user.perspectives || {}; // Initialize if it doesn't exist
-        user.perspectives[perspectiveKey] = perspectiveValue;
-
-        // Save the updated user
-        await user.save();
-        console.log('User updated:', user);
-
-        // Return the updated user with perspectives
-        res.status(200).json({ user: user });
+        res.status(200).json({ perspectives: user.perspectives });
     } catch (error) {
-        console.error('Error in /add_perspective:', error);
+        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// Route to update a user perspective
+app.post('/update_perspective', async (req, res) => {
+    try {
+        const email = req.cookies['user_email'];
+        const { perspectiveKey, perspectiveValue } = req.body;
 
+        if (!email) {
+            return res.status(400).json({ error: 'User not authenticated' });
+        }
 
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
+        user.perspectives[perspectiveKey] = perspectiveValue;
+        await user.save();
 
-
-
-
-
-
-
-
-
-
-
-
-app.delete('/delete_perspective/:rowNum', async (req, res) => {
-try {
-  const { rowNum } = req.params;
-  const email = req.cookies['user_email'];
-
-  if (!email) {
-    return res.status(400).json({ error: 'Invalid request. User not authenticated.' });
-  }
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(400).json({ error: 'Invalid request. User not found.' });
-  }
-
-  // Ensure user.perspectives is an array before attempting to access it
-  user.perspectives = user.perspectives || [];
-
-  if (user.perspectives.length > 0) {
-    user.perspectives.splice(rowNum - 1, 1);
-    await user.save();
-  }
-
-  res.status(200).json({ perspectives: user.perspectives });
-} catch (error) {
-  console.error(error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
-});
-
-// Route to fetch perspectives
-app.get('/fetch_perspectives', async (req, res) => {
-try {
-    const email = req.cookies['user_email'];
-
-    if (!email) {
-        return res.status(400).json({ error: 'Invalid request. User not authenticated.' });
+        res.status(200).json({ message: 'Perspective updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-        return res.status(400).json({ error: 'Invalid request. User not found.' });
-    }
-
-    res.status(200).json({ perspectives: user.perspectives });
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-}
 });
-
-// ... (other routes remain the same)
 
 
 // Root endpoint
@@ -255,82 +162,6 @@ app.get('/account', (req, res) => {
     res.sendFile(path.join(__dirname, 'perspective-platform', 'account.html'));
 });
 
-// Endpoint to get perspectives for a user
-app.get('/api/get_perspectives', async (req, res) => {
-    try {
-        const email = req.cookies.user_email || req.query.email;
-        if (!email) {
-            return res.status(400).json({ error: 'Email not provided' });
-        }
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.status(200).json(user.perspectives);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-app.post('/api/update_perspective', async (req, res) => {
-    try {
-        const email = req.cookies.user_email || req.body.email; // Assuming you get the user's email this way
-        const { key, value } = req.body;
-
-        const user = await User.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        user.perspectives = user.perspectives || {};
-        user.perspectives[key] = value;
-
-        await user.save();
-
-        res.status(200).json({ message: 'Perspective updated successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-app.post('/api/add_perspective', async (req, res) => {
-    try {
-        // Extract the necessary information from the request body
-        const { email, age, nationality, sex } = req.body;
-
-        // Find the user by email
-        const user = await User.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Initialize the perspectives object if it doesn't exist
-        user.perspectives = user.perspectives || {};
-
-        // Update the user's perspectives
-        user.perspectives.age = age;
-        user.perspectives.nationality = nationality;
-        user.perspectives.sex = sex;
-
-        // Save the updated user
-        await user.save();
-
-        // Respond with the updated user information
-        res.status(200).json({ user: user });
-    } catch (error) {
-        // Log and respond with an error message
-        console.error('Error in /api/add_perspective:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
@@ -345,6 +176,8 @@ const commentSchema = new mongoose.Schema({
     text: String,
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },
+    article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
   });
   
   // Create a Comment model
@@ -363,16 +196,55 @@ app.get('/get_comments', async (req, res) => {
     }
   });
 
-  app.post('/add_comment', async (req, res) => {
+  app.get('/get_comments/:articleId', async (req, res) => {
     try {
-        const { text } = req.body; // Assuming the comment text is sent in the 'text' field
+        const { articleId } = req.params;
 
-        if (!text) {
-            return res.status(400).json({ error: 'No comment text provided' });
+        // Find the article by its ID to ensure it exists
+        const article = await Article.findById(articleId).exec();
+        if (!article) {
+            return res.status(404).json({ error: 'Article not found' });
         }
 
-        const newComment = new Comment({ text });
+        // Fetch all comments for the specified article, including nested comments
+        const comments = await Comment.find({ article: articleId })
+            .populate('parent')
+            .exec();
+
+        res.status(200).json({ comments });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.post('/add_comment', async (req, res) => {
+    try {
+        const { text, articleId, parentCommentId } = req.body; // Assuming the comment text, articleId, and parentCommentId are sent in the request body
+
+        if (!text || !articleId) {
+            return res.status(400).json({ error: 'Invalid request. Comment text and article ID are required.' });
+        }
+
+        // Find the article by its ID to ensure it exists
+        const article = await Article.findById(articleId).exec();
+        if (!article) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        // Create a new comment with the provided data
+        const newComment = new Comment({
+            text,
+            article: articleId,
+            parent: parentCommentId || null, // Set the parent comment if provided
+        });
+
         await newComment.save(); // Save the comment to the database
+
+        // Add the comment's ID to the article's comments array
+        article.comments.push(newComment._id);
+        await article.save();
 
         res.status(201).json({ message: 'Comment added successfully', comment: newComment });
     } catch (error) {
@@ -381,4 +253,137 @@ app.get('/get_comments', async (req, res) => {
     }
 });
 
-  
+
+
+const articleSchema = new mongoose.Schema({
+    link: String,
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+});
+
+const Article = mongoose.model('Article', articleSchema);
+
+// Route to submit an article link
+app.post('/submit_link', async (req, res) => {
+    try {
+        const { link } = req.body;
+
+        // Create a new article
+        const article = new Article({ link });
+
+        // Save the article to the database
+        await article.save();
+
+        res.status(201).json({ message: 'Article link submitted successfully', article });
+    } catch (error) {
+        console.error('Error submitting article link:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+// Route to fetch article links
+app.get('/get_links', async (req, res) => {
+    try {
+        // Fetch all article links from the database
+        const articles = await Article.find().exec();
+
+        res.status(200).json({ articles });
+    } catch (error) {
+        console.error('Error fetching article links:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Route to submit a comment for an article
+app.post('/submit_comment/:articleId', async (req, res) => {
+    try {
+        const { articleId } = req.params;
+        const { text, upvotes, downvotes } = req.body;
+
+        // Find the article by its ID
+        const article = await Article.findById(articleId).exec();
+
+        if (!article) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        // Create a new comment
+        const comment = new Comment({ text, upvotes, downvotes });
+
+        // Add the comment to the article's comments array
+        article.comments.push(comment);
+
+        // Save the article with the new comment
+        await article.save();
+
+        res.status(201).json({ message: 'Comment submitted successfully', comment });
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Route to fetch comments for an article
+app.get('/get_comments/:articleId', async (req, res) => {
+    try {
+        const { articleId } = req.params;
+
+        // Find the article by its ID and populate the comments
+        const article = await Article.findById(articleId)
+            .populate('comments')
+            .exec();
+
+        if (!article) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        res.status(200).json({ comments: article.comments });
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+// Route to fetch articles with pagination
+app.get('/get_articles', async (req, res) => {
+    try {
+        const { page, size } = req.query;
+
+        const skip = (page - 1) * size;
+        const articles = await Article.find()
+            .sort({ createdAt: -1 }) // Sort by most recent
+            .skip(skip)
+            .limit(parseInt(size))
+            .populate('comments')
+            .exec();
+
+        const totalCount = await Article.countDocuments();
+
+        res.status(200).json({ articles, totalCount });
+    } catch (error) {
+        console.error('Error fetching articles:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.get('/get_article/:articleId', async (req, res) => {
+    try {
+        const { articleId } = req.params;
+
+        // Find the article by its ID and populate the comments
+        const article = await Article.findById(articleId)
+            .populate('comments')
+            .exec();
+
+        if (!article) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        res.status(200).json({ article });
+    } catch (error) {
+        console.error('Error fetching article:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});

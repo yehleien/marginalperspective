@@ -20,6 +20,105 @@
     color: white !important;
 }
 
+/* styles.css */
+
+/* styles.css */
+
+/* Pagination styles */
+#pagination {
+    margin-top: 20px;
+}
+
+#pagination a {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+}
+
+#pagination a.active {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+table td {
+    vertical-align: top;
+}
+
+
+.comment-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.comment-text {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.comment-votes {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #555;
+}
+
+
+.comment-box {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.comment-box .votes {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+
+.perspectives-section {
+    width: 80%; /* Adjust the width as needed */
+    margin: 0 auto; /* Centers the section */
+    padding: 20px; /* Adds some padding around the content */
+}
+
+#perspectivesTable {
+    width: 100%; /* Makes the table use the full width of the perspectives-section */
+    border-collapse: collapse; /* Optional: for styling */
+}
+
+#perspectivesTable th, #perspectivesTable td {
+    border: 1px solid #ddd; /* Optional: Adds border to table cells */
+    padding: 8px; /* Padding inside cells */
+    text-align: left; /* Aligns text to the left */
+}
+
+#perspectivesTable th {
+    background-color: #302828; /* Optional: Background color for header */
+}
+
 
 body {
     margin: 0;

@@ -1,182 +1,63 @@
-// Add this code at the beginning of your account.js
-document.addEventListener("DOMContentLoaded", () => {
-    const userEmail = getCookie('user_email');
-    const welcomeElement = document.getElementById('welcomeMessage');
-
-    if (userEmail && welcomeElement) {
-        updateWelcomeMessage(userEmail);
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    fetchPerspectives();
 });
 
-// Helper function to get a cookie value by name
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+function fetchPerspectives() {
+    fetch('/get_user_perspectives')
+        .then(response => response.json())
+        .then(data => {
+            if (data.perspectives) {
+                updatePerspectivesTable(data.perspectives);
+            }
+        })
+        .catch(error => console.error('Error fetching perspectives:', error));
 }
 
-// Function to update the welcome message
-function updateWelcomeMessage(userEmail) {
-    const welcomeElement = document.getElementById('welcomeMessage');
-    if (welcomeElement) {
-        welcomeElement.textContent = `Hello, ${userEmail}`;
-    }
+function updatePerspectivesTable(perspectives) {
+    const tableBody = document.getElementById('perspectivesTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    Object.keys(perspectives).forEach(key => {
+        let row = tableBody.insertRow();
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        let cell3 = row.insertCell(2);
+
+        cell1.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize the key
+        cell2.textContent = perspectives[key];
+        cell2.setAttribute('data-key', key); // Set a data attribute for identification
+        cell3.innerHTML = '<button onclick="editPerspective(this, \'' + key + '\')">Edit</button>';
+    });
 }
 
-document.getElementById('ageForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    updatePerspective('age', document.getElementById('age').value);
-});
-
-document.getElementById('nationalityForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    updatePerspective('nationality', document.getElementById('nationality').value);
-});
-
-document.getElementById('sexForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    updatePerspective('sex', document.getElementById('sex').value);
-});
-
-async function updatePerspective(key, value) {
-    try {
-        const response = await fetch('/api/update_perspective', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ key: key, value: value })
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to update perspective');
-        }
-
-        // Handle success - maybe refresh the page or show a success message
-    } catch (error) {
-        console.error('Error updating perspective:', error);
-    }
+function editPerspective(button, perspectiveKey) {
+    let cell = button.parentNode.previousSibling;
+    let currentValue = cell.textContent;
+    cell.innerHTML = '<input type="text" value="' + currentValue + '">'
+                    + '<button onclick="savePerspective(this, \'' + perspectiveKey + '\')">Save</button>';
 }
 
-// Function to add a new perspective
-// Function to add a new perspective
-function addPerspective() {
-    const newPerspective = document.getElementById('newPerspective').value;
-    const email = getCookie('user_email');
+function savePerspective(button, perspectiveKey) {
+    let input = button.parentNode.firstChild;
+    let newValue = input.value;
 
-    fetch('/add_perspective', {
+    // Send the updated value to the server
+    fetch('/update_perspective', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            email,
-            perspectiveKey: newPerspective, // Send the perspective key
-            perspectiveValue: "default value for " + newPerspective, // Set the default value
-        }),
+        body: JSON.stringify({ perspectiveKey, perspectiveValue: newValue }),
     })
     .then(response => response.json())
     .then(data => {
-        // Handle the response or update the table if needed
-        console.log(data);
-        // You can also update the table here if needed
-        updatePerspectiveTable(data.perspectives);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-async function fetchAndDisplayPerspectives() {
-    try {
-        const response = await fetch('/api/get_perspectives');
-        if (!response.ok) {
-            throw new Error('Failed to fetch perspectives');
+        if (data.message === 'Perspective updated successfully') {
+            // Update the table cell to show the new value
+            let cell = button.parentNode;
+            cell.textContent = newValue;
+        } else {
+            console.error('Error updating perspective:', data.error);
         }
-
-        const data = await response.json();
-        displayPerspectives(data.perspectives);
-    } catch (error) {
-        console.error('Error fetching perspectives:', error);
-    }
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetchUserPerspectives();
-});
-
-async function fetchUserPerspectives() {
-    try {
-        const response = await fetch('/api/get_perspectives');
-        if (!response.ok) {
-            throw new Error('Failed to fetch perspectives');
-        }
-
-        const data = await response.json();
-        updatePerspectiveDisplays(data.perspectives);
-    } catch (error) {
-        console.error('Error fetching perspectives:', error);
-    }
-}
-
-function updatePerspectiveDisplays(perspectives) {
-    document.getElementById('ageDisplay').textContent = perspectives.age || 'Not set';
-    document.getElementById('nationalityDisplay').textContent = perspectives.nationality || 'Not set';
-    document.getElementById('sexDisplay').textContent = perspectives.sex || 'Not set';
-}
-
-function displayPerspectives(perspectives) {
-    if (!perspectives) {
-        console.error('No perspectives data received');
-        return;
-    }
-
-    // Example of how you might display the perspectives
-    document.getElementById('ageDisplay').textContent = perspectives.age || 'Not set';
-    document.getElementById('nationalityDisplay').textContent = perspectives.nationality || 'Not set';
-    document.getElementById('sexDisplay').textContent = perspectives.sex || 'Not set';
-}
-
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', fetchAndDisplayPerspectives);
-
-// Function to delete a perspective
-function deletePerspective(rowNum) {
-    const email = getCookie('user_email');
-
-    fetch(`/delete_perspective/${rowNum}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
     })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response or update the table if needed
-        console.log(data);
-        // You can also update the table here if needed
-        updatePerspectiveTable(data.perspectives);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    .catch(error => console.error('Error updating perspective:', error));
 }
-
-// Helper function to update the perspective table
-function updatePerspectiveTable(perspectives) {
-    const tableBody = document.getElementById('perspectiveTableBody');
-    tableBody.innerHTML = '';
-
-    perspectives.forEach((perspective, index) => {
-        const row = tableBody.insertRow();
-        const cell1 = row.insertCell(0);
-        const cell2 = row.insertCell(1);
-
-        cell1.textContent = perspective;
-        cell2.innerHTML = `<button onclick="deletePerspective(${index + 1})">Delete</button>`;
-    });
-}
-
-

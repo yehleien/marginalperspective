@@ -21,75 +21,101 @@
         <h2>Home</h2>
         <p>Welcome to the Perspective Platform! Share your thoughts below.</p>
 
-        <!-- Comment Form -->
-        <form id="commentForm">
-            <label for="commentText">Add a Comment:</label>
-            <input type="text" id="commentText" name="commentText" required>
-            <button type="button" onclick="addComment()">Add</button>
+        <!-- Link Submission Form -->
+        <form id="linkForm">
+            <label for="articleLink">Submit an Article Link:</label>
+            <input type="url" id="articleLink" name="articleLink" required>
+            <button type="button" onclick="submitLink()">Submit</button>
         </form>
 
-        <!-- Comments Section -->
-        <div>
-            <h2>Comments</h2>
-            <ul id="commentsList">
-                <!-- Comments will be displayed here -->
-            </ul>
+        <!-- Articles Section -->
+        <div class="articles-section">
+            <h2>Articles</h2>
+            <table id="articlesTable">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>Comments</th>
+                        <th>View</th> <!-- Include the "View" button in the table header -->
+                    </tr>
+                </thead>
+                <tbody id="articlesTableBody">
+                    <!-- Articles will be displayed here dynamically from JavaScript -->
+                </tbody>
+            </table>
+            <div id="pagination">
+                <!-- Pagination links will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Article Viewer Section -->
+        <div class="article-viewer">
+            <h2>Article Viewer</h2>
+            <iframe id="articleFrame" src="" frameborder="0"></iframe>
+
+            <!-- Add a Comment Section -->
+            <form id="commentForm">
+                <label for="commentText">Add a Comment:</label>
+                <input type="text" id="commentText" name="commentText" required>
+                <button type="button" onclick="addComment()">Add</button>
+            </form>
+
+            <!-- Comments Section -->
+            <div>
+                <h2>Comments</h2>
+                <ul id="commentsSection">
+                    <!-- Comments will be displayed here -->
+                </ul>
+            </div>
         </div>
     </div>
 
+    <!-- Link to the external JavaScript file -->
+    <script src="home.js"></script>
+
+    <!-- JavaScript code to populate the articles table with data -->
     <script>
-        // Function to add a comment
-        function addComment() {
-            const commentText = document.getElementById('commentText').value;
+        // Sample data for articles
+        const articlesData = [
+            { link: "https://example.com/article1", comments: 0 },
+            { link: "https://example.com/article2", comments: 0 },
+            // Add more articles as needed
+        ];
 
-            // Use the actual route for adding comments
-            fetch('/add_comment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: commentText,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response or update the comments list
-                console.log(data);
-
-                // Clear the comment textarea
-                document.getElementById('commentText').value = '';
-
-                // Fetch and display comments again to show the new comment
-                fetchAndDisplayComments();
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        // Function to populate the articles table with data
+        function populateArticlesTable() {
+            const articlesTableBody = document.getElementById('articlesTableBody');
+            
+            articlesData.forEach((article, index) => {
+                const tr = document.createElement('tr');
+                
+                const tdLink = document.createElement('td');
+                const link = document.createElement('a');
+                link.href = article.link;
+                link.target = '_blank';
+                link.textContent = `Example Article ${index + 1}`;
+                tdLink.appendChild(link);
+                
+                const tdComments = document.createElement('td');
+                tdComments.textContent = article.comments;
+                
+                const tdView = document.createElement('td');
+                const viewButton = document.createElement('button');
+                viewButton.type = 'button';
+                viewButton.textContent = 'View';
+                viewButton.addEventListener('click', () => viewArticle(article.link));
+                tdView.appendChild(viewButton);
+                
+                tr.appendChild(tdLink);
+                tr.appendChild(tdComments);
+                tr.appendChild(tdView);
+                
+                articlesTableBody.appendChild(tr);
             });
         }
 
-        // Function to fetch and display comments
-        function fetchAndDisplayComments() {
-            // Use the actual route to fetch comments
-            fetch('/get_comments')
-            .then(response => response.json())
-            .then(data => {
-                const commentsList = document.getElementById('commentsList');
-                commentsList.innerHTML = ''; // Clear existing comments
-
-                data.comments.forEach(comment => {
-                    const li = document.createElement('li');
-                    li.textContent = comment.text;
-                    commentsList.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        // Initial fetch and display comments
-        fetchAndDisplayComments();
+        // Populate the articles table with data on page load
+        window.addEventListener('load', populateArticlesTable);
     </script>
 </body>
 </html>
