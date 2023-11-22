@@ -85,59 +85,73 @@ function fetchAndDisplayComments() {
 // Initial fetch and display comments
 fetchAndDisplayComments();
 
-// Function to fetch and display articles with comments
+let currentPage = 1;
+const articlesPerPage = 5;
+
 function fetchAndDisplayArticles() {
-    fetch('/get_articles')
+    fetch(`/get_articles?page=${currentPage}&limit=${articlesPerPage}`)
     .then(response => response.json())
     .then(data => {
-        const articlesTableBody = document.getElementById('articlesTableBody');
-        articlesTableBody.innerHTML = ''; // Clear existing articles
-
-        data.articles.forEach(article => {
-            const tr = document.createElement('tr');
-            const tdLink = document.createElement('td');
-            const tdComments = document.createElement('td');
-
-            tdLink.innerHTML = `<a href="${article.link}" target="_blank">${article.title}</a>`;
-            tdComments.textContent = article.commentsCount;
-
-            tr.appendChild(tdLink);
-            tr.appendChild(tdComments);
-
-            articlesTableBody.appendChild(tr);
-        });
-
-        // Add the view button functionality
-        addViewButtonFunctionality();
+        populateArticlesTable(data.articles);
+        setupPagination(data.totalArticles);
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
 
-// Initial fetch and display articles
-fetchAndDisplayArticles();
+function setupPagination(totalArticles) {
+    const totalPages = Math.ceil(totalArticles / articlesPerPage);
+    const paginationContainer = document.getElementById('pagination');
+    paginationContainer.innerHTML = '';
 
-// Function to add functionality to the "View" button
-function addViewButtonFunctionality() {
-    const viewButtons = document.querySelectorAll('button[data-article-link]');
-    
-    viewButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            const articleLink = this.getAttribute('data-article-link');
-            viewArticle(articleLink, event);
-        });
-    });
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.onclick = () => changePage(i);
+        paginationContainer.appendChild(pageButton);
+    }
 }
 
-// Function to view an article and associated comments
-function viewArticle(articleLink, event) {
-    event.preventDefault();
+function changePage(pageNumber) {
+    currentPage = pageNumber;
+    fetchAndDisplayArticles();
+}
 
-    const articleFrame = document.getElementById('articleFrame');
-    articleFrame.src = articleLink;
+// Call fetchAndDisplayArticles on initial load
+fetchAndDisplayArticles();
 
-    fetchCommentsForArticle(articleLink);
+
+// Function to populate the articles table with fetched data
+function populateArticlesTable(articlesData) {
+    const articlesTableBody = document.getElementById('articlesTableBody');
+    articlesTableBody.innerHTML = ''; // Clear existing articles
+
+    articlesData.forEach(article => {
+        const tr = document.createElement('tr');
+
+        const tdLink = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = article.link;
+        link.target = '_blank';
+        link.textContent = article.title;
+        tdLink.appendChild(link);
+
+        const tdComments = document.createElement('td');
+        tdComments.textContent = article.commentsCount;
+
+        const tdView = document.createElement('td');
+        const viewButton = document.createElement('button');
+        viewButton.textContent = 'View';
+        viewButton.addEventListener('click', () => viewArticle(article.link));
+        tdView.appendChild(viewButton);
+
+        tr.appendChild(tdLink);
+        tr.appendChild(tdComments);
+        tr.appendChild(tdView);
+
+        articlesTableBody.appendChild(tr);
+    });
 }
 
 // Function to fetch and display comments associated with an article
@@ -175,50 +189,6 @@ function displayComments(comments) {
     });
 }
 
-// Function to fetch article data from the server
-function fetchArticleData() {
-    fetch('/get_articles_data')
-        .then(response => response.json())
-        .then(data => {
-            // Call a function to populate the articles table with the fetched data
-            populateArticlesTable(data.articles);
-        })
-        .catch(error => {
-            console.error('Error fetching article data:', error);
-        });
-}
 
-// Function to populate the articles table with fetched data
-function populateArticlesTable(articlesData) {
-    const articlesTableBody = document.getElementById('articlesTableBody');
 
-    articlesData.forEach((article, index) => {
-        const tr = document.createElement('tr');
 
-        const tdLink = document.createElement('td');
-        const link = document.createElement('a');
-        link.href = article.link;
-        link.target = '_blank';
-        link.textContent = `Article ${index + 1}`;
-        tdLink.appendChild(link);
-
-        const tdComments = document.createElement('td');
-        tdComments.textContent = article.comments;
-
-        const tdView = document.createElement('td');
-        const viewButton = document.createElement('button');
-        viewButton.type = 'button';
-        viewButton.textContent = 'View';
-        viewButton.addEventListener('click', () => viewArticle(article.link));
-        tdView.appendChild(viewButton);
-
-        tr.appendChild(tdLink);
-        tr.appendChild(tdComments);
-        tr.appendChild(tdView);
-
-        articlesTableBody.appendChild(tr);
-    });
-}
-
-// Fetch and populate the articles table with data on page load
-window.addEventListener('load', fetchArticleData);

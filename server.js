@@ -19,7 +19,7 @@ mongoose.connect('mongodb+srv://nyehle973:cKuMloMhNBnyTHbH@cluster0.f5kabhi.mong
     dbName: 'liminal',
 });
 
-// User model
+// Define your schemas and models
 const userSchema = new mongoose.Schema({
     email: String,
     password: String,
@@ -29,10 +29,92 @@ const userSchema = new mongoose.Schema({
         nationality: String
     }
 });
-
 const User = mongoose.model('User', userSchema);
 
+const articleSchema = new mongoose.Schema({
+    link: String,
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+});
+const Article = mongoose.model('Article', articleSchema);
+
+const commentSchema = new mongoose.Schema({
+    text: String,
+    upvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    downvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },
+    article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
+});
+const Comment = mongoose.model('Comment', commentSchema);
+
+async function findUserVote(commentId, userId) {
+    try {
+        const comment = await Comment.findById(commentId);
+        if (comment) {
+            if (comment.upvotes.includes(userId)) {
+                return 'upvote';
+            } else if (comment.downvotes.includes(userId)) {
+                return 'downvote';
+            }
+        }
+        return null; // No vote found
+    } catch (error) {
+        console.error('Error in findUserVote:', error);
+        throw error; // Rethrow the error to handle it in the calling function
+    }
+}
+
 // Routes
+
+// server.js
+
+// ... [other code and routes]
+
+// Example of a modified /toggle_vote endpoint
+app.post('/toggle_vote', async (req, res) => {
+    const { commentId, voteType, userId } = req.body;
+
+    try {
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        // Convert userId to ObjectId
+        const userIdObj = new mongoose.Types.ObjectId(userId);
+
+        if (voteType === 'upvote') {
+            // Check if the user has already upvoted
+            if (comment.upvotes.includes(userIdObj)) {
+                // User is retracting their upvote
+                comment.upvotes.pull(userIdObj);
+            } else {
+                // Add upvote and remove downvote if it exists
+                comment.upvotes.addToSet(userIdObj);
+                comment.downvotes.pull(userIdObj);
+            }
+        } else if (voteType === 'downvote') {
+            // Check if the user has already downvoted
+            if (comment.downvotes.includes(userIdObj)) {
+                // User is retracting their downvote
+                comment.downvotes.pull(userIdObj);
+            } else {
+                // Add downvote and remove upvote if it exists
+                comment.downvotes.addToSet(userIdObj);
+                comment.upvotes.pull(userIdObj);
+            }
+        }
+
+        await comment.save();
+        res.json({ success: true, comment });
+    } catch (error) {
+        console.error('Error in toggle_vote:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
 
 app.post('/signup', async (req, res) => {
   try {
@@ -162,54 +244,29 @@ app.get('/account', (req, res) => {
     res.sendFile(path.join(__dirname, 'perspective-platform', 'account.html'));
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+// Article submission and retrieval routes
+app.post('/submit_link', async (req, res) => {
+    // Your existing code for submitting a link
 });
 
-// MongoDB setup
-mongoose.connect('mongodb+srv://nyehle973:cKuMloMhNBnyTHbH@cluster0.f5kabhi.mongodb.net/liminal', {
-    dbName: 'liminal',
+app.get('/get_links', async (req, res) => {
+    // Your existing code for getting links
 });
 
-const commentSchema = new mongoose.Schema({
-    text: String,
-    upvotes: { type: Number, default: 0 },
-    downvotes: { type: Number, default: 0 },
-    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },
-    article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
-  });
-  
-  // Create a Comment model
-  const Comment = mongoose.model('Comment', commentSchema);
+// Comment submission and retrieval routes
+app.post('/add_comment', async (req, res) => {
+    // Your existing code for adding a comment
+});
 
-  // Route to get all comments
-app.get('/get_comments', async (req, res) => {
-    try {
-      // Fetch all comments from the database
-      const comments = await Comment.find();
-  
-      res.status(200).json({ comments });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-  app.get('/get_comments/:articleId', async (req, res) => {
+app.get('/get_comments/:articleId', async (req, res) => {
     try {
         const { articleId } = req.params;
 
-        // Find the article by its ID to ensure it exists
-        const article = await Article.findById(articleId).exec();
-        if (!article) {
-            return res.status(404).json({ error: 'Article not found' });
-        }
-
-        // Fetch all comments for the specified article, including nested comments
-        const comments = await Comment.find({ article: articleId })
-            .populate('parent')
-            .exec();
+        const comments = await Comment.aggregate([
+            { $match: { article: new mongoose.Types.ObjectId(articleId) } },
+            { $addFields: { totalVotes: { $sum: [{ $size: "$upvotes" }, { $size: "$downvotes" }] } } },
+            { $sort: { totalVotes: -1 } } // Sort by totalVotes in descending order
+        ]);
 
         res.status(200).json({ comments });
     } catch (error) {
@@ -219,28 +276,69 @@ app.get('/get_comments', async (req, res) => {
 });
 
 
-app.post('/add_comment', async (req, res) => {
+
+// Pagination route for news
+app.get('/get_news', async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
     try {
-        const { text, articleId, parentCommentId } = req.body; // Assuming the comment text, articleId, and parentCommentId are sent in the request body
+        const articles = await Article.find()
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean();
 
-        if (!text || !articleId) {
-            return res.status(400).json({ error: 'Invalid request. Comment text and article ID are required.' });
-        }
+        const count = await Article.countDocuments();
 
-        // Find the article by its ID to ensure it exists
-        const article = await Article.findById(articleId).exec();
+        res.json({
+            articles,
+            totalArticles: count
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Serve static pages
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'perspective-platform', 'index.html'));
+});
+
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname, 'perspective-platform', 'home.html'));
+});
+
+app.get('/news', (req, res) => {
+    res.sendFile(path.join(__dirname, 'perspective-platform', 'news.html'));
+});
+
+app.get('/account', (req, res) => {
+    res.sendFile(path.join(__dirname, 'perspective-platform', 'account.html'));
+});
+
+app.post('/post_comment', async (req, res) => {
+    const { articleId, commentText } = req.body;
+
+    if (!articleId || !commentText) {
+        return res.status(400).json({ error: 'Article ID and comment text are required.' });
+    }
+
+    try {
+        // Find the article by its ID
+        const article = await Article.findById(articleId);
         if (!article) {
             return res.status(404).json({ error: 'Article not found' });
         }
 
-        // Create a new comment with the provided data
+        // Create a new comment
         const newComment = new Comment({
-            text,
-            article: articleId,
-            parent: parentCommentId || null, // Set the parent comment if provided
+            text: commentText,
+            article: articleId
+            // You can add more fields here if needed, like user info, timestamps, etc.
         });
 
-        await newComment.save(); // Save the comment to the database
+        // Save the new comment
+        await newComment.save();
 
         // Add the comment's ID to the article's comments array
         article.comments.push(newComment._id);
@@ -255,135 +353,7 @@ app.post('/add_comment', async (req, res) => {
 
 
 
-const articleSchema = new mongoose.Schema({
-    link: String,
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-});
-
-const Article = mongoose.model('Article', articleSchema);
-
-// Route to submit an article link
-app.post('/submit_link', async (req, res) => {
-    try {
-        const { link } = req.body;
-
-        // Create a new article
-        const article = new Article({ link });
-
-        // Save the article to the database
-        await article.save();
-
-        res.status(201).json({ message: 'Article link submitted successfully', article });
-    } catch (error) {
-        console.error('Error submitting article link:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-// Route to fetch article links
-app.get('/get_links', async (req, res) => {
-    try {
-        // Fetch all article links from the database
-        const articles = await Article.find().exec();
-
-        res.status(200).json({ articles });
-    } catch (error) {
-        console.error('Error fetching article links:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Route to submit a comment for an article
-app.post('/submit_comment/:articleId', async (req, res) => {
-    try {
-        const { articleId } = req.params;
-        const { text, upvotes, downvotes } = req.body;
-
-        // Find the article by its ID
-        const article = await Article.findById(articleId).exec();
-
-        if (!article) {
-            return res.status(404).json({ error: 'Article not found' });
-        }
-
-        // Create a new comment
-        const comment = new Comment({ text, upvotes, downvotes });
-
-        // Add the comment to the article's comments array
-        article.comments.push(comment);
-
-        // Save the article with the new comment
-        await article.save();
-
-        res.status(201).json({ message: 'Comment submitted successfully', comment });
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Route to fetch comments for an article
-app.get('/get_comments/:articleId', async (req, res) => {
-    try {
-        const { articleId } = req.params;
-
-        // Find the article by its ID and populate the comments
-        const article = await Article.findById(articleId)
-            .populate('comments')
-            .exec();
-
-        if (!article) {
-            return res.status(404).json({ error: 'Article not found' });
-        }
-
-        res.status(200).json({ comments: article.comments });
-    } catch (error) {
-        console.error('Error fetching comments:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-// Route to fetch articles with pagination
-app.get('/get_articles', async (req, res) => {
-    try {
-        const { page, size } = req.query;
-
-        const skip = (page - 1) * size;
-        const articles = await Article.find()
-            .sort({ createdAt: -1 }) // Sort by most recent
-            .skip(skip)
-            .limit(parseInt(size))
-            .populate('comments')
-            .exec();
-
-        const totalCount = await Article.countDocuments();
-
-        res.status(200).json({ articles, totalCount });
-    } catch (error) {
-        console.error('Error fetching articles:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-app.get('/get_article/:articleId', async (req, res) => {
-    try {
-        const { articleId } = req.params;
-
-        // Find the article by its ID and populate the comments
-        const article = await Article.findById(articleId)
-            .populate('comments')
-            .exec();
-
-        if (!article) {
-            return res.status(404).json({ error: 'Article not found' });
-        }
-
-        res.status(200).json({ article });
-    } catch (error) {
-        console.error('Error fetching article:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
 });

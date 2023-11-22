@@ -21,6 +21,10 @@
 }
 
 /* styles.css */
+.selected-row {
+    background-color: #f0f0f0; /* Light grey background */
+    color: #333; /* Darker text color for contrast */
+}
 
 /* styles.css */
 
@@ -37,6 +41,135 @@
     text-decoration: none;
     color: #333;
 }
+/* Existing CSS */
+/* ... existing CSS ... */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+.articles-container {
+    max-height: 50vh; /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.articles-container {
+    flex: 1;
+    overflow: auto;
+}
+
+.comment-box {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.right-container {
+    width: 50%;
+    overflow: auto;
+}
+
+#commentInput {
+    width: 100%;
+    height: 80%;
+    box-sizing: border-box;
+}
+
+/* Add any additional styling as needed */
+
+#commentBox {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Ensure it's above other elements */
+}
+.upvote, .downvote {
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.upvoted {
+    color: green;
+}
+.highlighted {
+    background-color: #f0f0f0; /* or any other color you prefer */
+}
+
+.downvoted {
+    color: red;
+}
+
+#commentsContainer {
+    /* ... existing styles ... */
+    overflow-y: auto; /* Add scroll for overflow */
+}
+
+.comment {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+}
+
+.comment .votes {
+    font-size: 0.8em;
+    color: #666;
+}
+
+#contentContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+#articlesContainer {
+    flex: 1;
+    padding-right: 20px; /* Optional spacing between the table and comments */
+}
+
+#commentsContainer {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    #contentContainer {
+        flex-direction: column;
+    }
+}
+
+/* Additional CSS for styling the comment section and table */
+
+.comment {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.comment p {
+    margin: 0;
+    color: #333;
+}
+
+.comment span {
+    font-size: 0.8em;
+    color: #666;
+}
+
 
 #pagination a.active {
     background-color: #333;

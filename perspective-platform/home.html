@@ -1,25 +1,25 @@
-<!-- home.html -->
-<!DOCTYPE html>
+
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - liminal</title>
+    <title>Home - Liminal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>liminal</h1>
+        <h1>Liminal</h1>
         <nav>
             <a href="home.html" class="header-link">Home</a>
             <a href="account.html" class="header-link">Account</a>
+            <a href="news.html" class="header-link">News</a>
             <a href="index.html" class="header-link">Logout</a>
+            
         </nav>
     </header>
 
     <div class="center-container">
-        <h2>Home</h2>
-        <p>Welcome to the Perspective Platform! Share your thoughts below.</p>
 
         <!-- Link Submission Form -->
         <form id="linkForm">
@@ -28,94 +28,22 @@
             <button type="button" onclick="submitLink()">Submit</button>
         </form>
 
-        <!-- Articles Section -->
-        <div class="articles-section">
-            <h2>Articles</h2>
-            <table id="articlesTable">
-                <thead>
-                    <tr>
-                        <th>Link</th>
-                        <th>Comments</th>
-                        <th>View</th> <!-- Include the "View" button in the table header -->
-                    </tr>
-                </thead>
-                <tbody id="articlesTableBody">
-                    <!-- Articles will be displayed here dynamically from JavaScript -->
-                </tbody>
-            </table>
-            <div id="pagination">
-                <!-- Pagination links will be displayed here -->
-            </div>
-        </div>
-
-        <!-- Article Viewer Section -->
-        <div class="article-viewer">
-            <h2>Article Viewer</h2>
-            <iframe id="articleFrame" src="" frameborder="0"></iframe>
-
-            <!-- Add a Comment Section -->
-            <form id="commentForm">
-                <label for="commentText">Add a Comment:</label>
-                <input type="text" id="commentText" name="commentText" required>
-                <button type="button" onclick="addComment()">Add</button>
-            </form>
-
-            <!-- Comments Section -->
-            <div>
-                <h2>Comments</h2>
-                <ul id="commentsSection">
-                    <!-- Comments will be displayed here -->
-                </ul>
-            </div>
-        </div>
+        <h2>Articles</h2>
+        <table id="articlesTable">
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Comments</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody id="articlesTableBody">
+                <!-- Articles will be dynamically populated here -->
+            </tbody>
+        </table>
     </div>
 
     <!-- Link to the external JavaScript file -->
     <script src="home.js"></script>
-
-    <!-- JavaScript code to populate the articles table with data -->
-    <script>
-        // Sample data for articles
-        const articlesData = [
-            { link: "https://example.com/article1", comments: 0 },
-            { link: "https://example.com/article2", comments: 0 },
-            // Add more articles as needed
-        ];
-
-        // Function to populate the articles table with data
-        function populateArticlesTable() {
-            const articlesTableBody = document.getElementById('articlesTableBody');
-            
-            articlesData.forEach((article, index) => {
-                const tr = document.createElement('tr');
-                
-                const tdLink = document.createElement('td');
-                const link = document.createElement('a');
-                link.href = article.link;
-                link.target = '_blank';
-                link.textContent = `Example Article ${index + 1}`;
-                tdLink.appendChild(link);
-                
-                const tdComments = document.createElement('td');
-                tdComments.textContent = article.comments;
-                
-                const tdView = document.createElement('td');
-                const viewButton = document.createElement('button');
-                viewButton.type = 'button';
-                viewButton.textContent = 'View';
-                viewButton.addEventListener('click', () => viewArticle(article.link));
-                tdView.appendChild(viewButton);
-                
-                tr.appendChild(tdLink);
-                tr.appendChild(tdComments);
-                tr.appendChild(tdView);
-                
-                articlesTableBody.appendChild(tr);
-            });
-        }
-
-        // Populate the articles table with data on page load
-        window.addEventListener('load', populateArticlesTable);
-    </script>
 </body>
 </html>
