@@ -1,63 +1,107 @@
-document.addEventListener('DOMContentLoaded', function() {
-    fetchPerspectives();
-});
-
-function fetchPerspectives() {
-    fetch('/get_user_perspectives')
-        .then(response => response.json())
-        .then(data => {
-            if (data.perspectives) {
-                updatePerspectivesTable(data.perspectives);
-            }
-        })
-        .catch(error => console.error('Error fetching perspectives:', error));
+// perspective-platform/account.js
+async function fetchAndDisplayUsername() {
+    try {
+        const response = await fetch('/account/current', {
+            credentials: 'include' // include credentials to send the session cookie
+        });
+        const user = await response.json();
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        welcomeMessage.textContent = 'Welcome ' + user.username;
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
-function updatePerspectivesTable(perspectives) {
-    const tableBody = document.getElementById('perspectivesTable').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = ''; // Clear existing rows
+async function fetchAndDisplayPerspectives() {
+    try {
+        const response = await fetch('/account/current', {
+            credentials: 'include' // include credentials to send the session cookie
+        });
+        const user = await response.json();
+        const perspectivesResponse = await fetch('/perspectives/get_perspectives/' + user.id, {
+            credentials: 'include' // include credentials to send the session cookie
+        });
+        const perspectives = await perspectivesResponse.json();
+        const perspectivesList = document.getElementById('perspectivesList');
+        perspectivesList.innerHTML = ''; // Clear the list
+        perspectives.forEach(perspective => {
+            const listItem = document.createElement('li');
+            listItem.textContent = perspective.perspectiveName; // Changed from perspectiveText to perspectiveName
+            perspectivesList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
-    Object.keys(perspectives).forEach(key => {
-        let row = tableBody.insertRow();
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        let cell3 = row.insertCell(2);
+document.getElementById('addPerspectiveForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
 
-        cell1.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize the key
-        cell2.textContent = perspectives[key];
-        cell2.setAttribute('data-key', key); // Set a data attribute for identification
-        cell3.innerHTML = '<button onclick="editPerspective(this, \'' + key + '\')">Edit</button>';
+    const perspectiveName = document.getElementById('perspectiveName').value;
+
+    // Fetch the current user to get the userId
+    const userResponse = await fetch('/account/current', {
+        credentials: 'include' // include credentials to send the session cookie
     });
-}
+    const user = await userResponse.json();
+    const userId = user.id;
 
-function editPerspective(button, perspectiveKey) {
-    let cell = button.parentNode.previousSibling;
-    let currentValue = cell.textContent;
-    cell.innerHTML = '<input type="text" value="' + currentValue + '">'
-                    + '<button onclick="savePerspective(this, \'' + perspectiveKey + '\')">Save</button>';
-}
-
-function savePerspective(button, perspectiveKey) {
-    let input = button.parentNode.firstChild;
-    let newValue = input.value;
-
-    // Send the updated value to the server
-    fetch('/update_perspective', {
+    const response = await fetch('/perspectives/add_perspective', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ perspectiveKey, perspectiveValue: newValue }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message === 'Perspective updated successfully') {
-            // Update the table cell to show the new value
-            let cell = button.parentNode;
-            cell.textContent = newValue;
-        } else {
-            console.error('Error updating perspective:', data.error);
-        }
-    })
-    .catch(error => console.error('Error updating perspective:', error));
+        body: JSON.stringify({ perspectiveName, userId }) // Include userId here
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        // Clear the input field
+        document.getElementById('perspectiveName').value = '';
+
+        // Refresh the perspectives list
+        fetchAndDisplayPerspectives();
+    } else {
+        // Display an error message
+        console.error('Error:', data.error);
+    }
+});
+
+// Function to update a perspective
+async function updatePerspective(id, perspectiveName) {
+    const response = await fetch('/perspectives/update_perspective/' + id, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ perspectiveName })
+    });
+    const data = await response.json();
+    if (data.success) {
+        // Refresh the perspectives list
+        fetchAndDisplayPerspectives();
+    } else {
+        // Display an error message
+    }
 }
+
+// Function to delete a perspective
+async function deletePerspective(id) {
+    const response = await fetch('/perspectives/delete_perspective/' + id, {
+        method: 'DELETE'
+    });
+    const data = await response.json();
+    if (data.success) {
+        // Refresh the perspectives list
+        fetchAndDisplayPerspectives();
+    } else {
+        // Display an error message
+    }
+}
+
+window.onload = function() {
+    fetchAndDisplayUsername();
+    fetchAndDisplayPerspectives();
+};
+

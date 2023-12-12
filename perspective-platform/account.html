@@ -3,48 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account - Perspective Platform</title>
+    <title>Account - Liminal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body> 
+<body>
     <header>
-        <h1>liminal</h1>
+        <h1>Liminal</h1>
         <nav>
             <a href="home.html" class="header-link">Home</a>
             <a href="account.html" class="header-link">Account</a>
-            <a href="news.html" class="header-link">News</a>
             <a href="index.html" class="header-link">Logout</a>
         </nav>
     </header>
 
-    <div class="center-container">
-        <h2>Your Account</h2>
-        <p>Welcome to the Perspective Platform! Here, you can manage your perspectives.</p>
-        <div id="welcomeMessage"></div>
+    <h2 id="welcomeMessage"></h2>
 
-
-       <!-- Inside your <body> tag, where you want to display the perspectives -->
-<div class="perspectives-section">
     <h2>Your Perspectives</h2>
-    <table id="perspectivesTable">
+    <table>
         <thead>
             <tr>
-                <th>Perspective</th>
-                <th>Value</th>
-                <th>Edit</th>
+                <th>Perspective Name</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Perspectives will be added here dynamically -->
+
+        <form id="addPerspectiveForm">
+            <input type="text" id="perspectiveName" placeholder="Perspective Name">
+            <button type="submit">Add Perspective</button>
+        </form>
+
+        <tbody id="perspectivesList">
+            <!-- Perspectives will be dynamically loaded here -->
         </tbody>
     </table>
-</div>
-
-
-     
- 
-
-
     <script src="account.js"></script>
 </body>
 </html>

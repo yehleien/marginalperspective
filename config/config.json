@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "nick",
+    "password": "vlookup47**",
+    "database": "liminal",
+    "host": "192.168.86.42",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "nick",
+    "password": "vlookup47**",
+    "database": "liminal",
+    "host": "192.168.86.42",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "nick",
+    "password": "vlookup47**",
+    "database": "liminal",
+    "host": "192.168.86.42",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

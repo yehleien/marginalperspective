@@ -1,29 +1,25 @@
-function signup() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+document.getElementById('signupForm').addEventListener('submit', function(event) {
+    event.preventDefault();
 
-    fetch('/signup', {
+    const username = document.getElementById('username').value;
+    const messageElement = document.getElementById('message');
+
+    fetch('/account/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username })
     })
-    .then(response => response.json().then(data => ({ status: response.status, body: data })))
-    .then(obj => {
-        if (obj.status === 200) {
-            console.log('Signup successful:', obj.body);
-            window.location.href = '/home'; // Redirect on successful signup
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageElement.textContent = 'Signup successful!';
+            // Redirect to another page or update the UI as needed
         } else {
-            console.error('Signup failed:', obj.body.error);
-            alert('Signup failed: ' + obj.body.error); // Show error message to the user
+            messageElement.textContent = 'Signup failed: ' + data.error;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred: ' + error); // Show error message to the user
+        console.error('Error during signup:', error);
+        messageElement.textContent = 'Error during signup.';
     });
-}
-
-document.getElementById('signupForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-    signup();
 });

@@ -1,296 +1,228 @@
-/* styles.css */
-/* Add this to your stylesheet */
-.header-link {
-    color: white;
-    text-decoration: none; /* Optional: Removes underlines from links */
-}
-
-/* Style for visited links */
-.header-link:visited {
-    color: white;
-}
-
-/* Style for hover effect */
-.header-link:hover {
-    color: #ddd; /* Optional: Change to a different color on hover */
-}
-
-/* Assuming your header links have a class named 'header-link' */
-.header-link {
-    color: white !important;
-}
-
-/* styles.css */
-.selected-row {
-    background-color: #f0f0f0; /* Light grey background */
-    color: #333; /* Darker text color for contrast */
-}
-
-/* styles.css */
-
-/* Pagination styles */
-#pagination {
-    margin-top: 20px;
-}
-
-#pagination a {
-    display: inline-block;
-    padding: 5px 10px;
-    margin-right: 5px;
-    border: 1px solid #ccc;
-    text-decoration: none;
-    color: #333;
-}
-/* Existing CSS */
-/* ... existing CSS ... */
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.main-container {
-    display: flex;
-    flex: 1;
-}
-.articles-container {
-    max-height: 50vh; /* Adjust the height as needed */
-    overflow-y: auto;
-}
-
-.left-container {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-}
-
-.articles-container {
-    flex: 1;
-    overflow: auto;
-}
-
-.comment-box {
-    flex: 1;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.right-container {
-    width: 50%;
-    overflow: auto;
-}
-
-#commentInput {
-    width: 100%;
-    height: 80%;
-    box-sizing: border-box;
-}
-
-/* Add any additional styling as needed */
-
-#commentBox {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    background-color: white;
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ensure it's above other elements */
-}
-.upvote, .downvote {
-    cursor: pointer;
-    padding: 5px;
-    margin-right: 5px;
-}
-
-.upvoted {
-    color: green;
-}
-.highlighted {
-    background-color: #f0f0f0; /* or any other color you prefer */
-}
-
-.downvoted {
-    color: red;
-}
-
-#commentsContainer {
-    /* ... existing styles ... */
-    overflow-y: auto; /* Add scroll for overflow */
-}
-
-.comment {
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid #ddd;
-}
-
-.comment .votes {
-    font-size: 0.8em;
-    color: #666;
-}
-
-#contentContainer {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-}
-
-#articlesContainer {
-    flex: 1;
-    padding-right: 20px; /* Optional spacing between the table and comments */
-}
-
-#commentsContainer {
-    flex: 1;
-}
-
-@media (max-width: 768px) {
-    #contentContainer {
-        flex-direction: column;
-    }
-}
-
-/* Additional CSS for styling the comment section and table */
-
-.comment {
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.comment p {
+/* Global Reset and Styles */
+* {
     margin: 0;
-    color: #333;
+    padding: 0;
+    box-sizing: border-box;
 }
-
-.comment span {
-    font-size: 0.8em;
-    color: #666;
-}
-
-
-#pagination a.active {
-    background-color: #333;
-    color: #fff;
-}
-
-/* Table styles */
 table {
     width: 100%;
     border-collapse: collapse;
-}
-
-table th, table td {
-    padding: 8px 12px;
+  }
+  
+  table, th, td {
+    border: 1px solid black;
+  }
+  
+  th, td {
+    padding: 15px;
     text-align: left;
-    border: 1px solid #ccc;
-}
-
-table th {
-    background-color: #f2f2f2;
-}
-
-table td {
-    vertical-align: top;
-}
-
-
-.comment-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.comment-text {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.comment-votes {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9em;
-    color: #555;
-}
-
-
-.comment-box {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.comment-box .votes {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #555;
-}
-
-
-.perspectives-section {
-    width: 80%; /* Adjust the width as needed */
-    margin: 0 auto; /* Centers the section */
-    padding: 20px; /* Adds some padding around the content */
-}
-
-#perspectivesTable {
-    width: 100%; /* Makes the table use the full width of the perspectives-section */
-    border-collapse: collapse; /* Optional: for styling */
-}
-
-#perspectivesTable th, #perspectivesTable td {
-    border: 1px solid #ddd; /* Optional: Adds border to table cells */
-    padding: 8px; /* Padding inside cells */
-    text-align: left; /* Aligns text to the left */
-}
-
-#perspectivesTable th {
-    background-color: #302828; /* Optional: Background color for header */
-}
-
-
-body {
-    margin: 0;
-    padding: 0;
+  }
+html, body {
+    height: 100%;
     font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
 }
-
 header {
     background-color: #333;
     color: white;
     padding: 1rem;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#articlesBody tr.selected {
+    background-color: #34b1db; /* Light blue */
+}
+h1 {
+    margin-bottom: 1rem;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.articles-column {
+    flex: 1;
+    order: 1;
+}
+
+.article-display-column {
+    flex: 2;
+    order: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+#articleFrame {
+    flex: 1;
+}
+
+.comment-form-column {
+    flex: 1;
+}
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+/* Header Styles */
+header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 nav {
+    width: 100%;
     display: flex;
     justify-content: space-around;
-    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.header-link {
+    color: white;
+    text-decoration: none;
+    margin: 0 1rem;
 }
 
 .center-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 2rem;
 }
 
-table {
-    border-collapse: collapse;
+.sort-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.sort-button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+}
+
+.articles-table {
     width: 100%;
+    border-collapse: collapse;
 }
 
-table, th, td {
+.articles-table th, .articles-table td {
     border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.articles-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.center-text {
+    text-align: center;
+}
+
+/* Main container with flexbox for 3 columns */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Spacing between columns */
+    padding: 10px;
+}
+
+/* Columns */
+.articles-column,
+.comments-column,
+.comment-form-column {
+    flex-basis: calc(33.333% - 20px); /* Subtracting the gap from the flex-basis */
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 10px;
+    overflow-y: auto; /* Scrollable columns */
+    height: 800px; /* Fixed height, or you can make it responsive with vh */
+}
+
+/* Comment form styles */
+#commentForm,
+#submitArticleForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#commentInput, 
+#perspectiveSelect {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#commentForm button,
+#ArticleForm button {
+    padding: 10px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#commentForm button:hover {
+    background-color: #003d82;
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.pagination button.active,
+.pagination button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Article and comment styles */
+.article-item,
+.comment-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.article-item:last-child,
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
 }
 
 th, td {
-    padding: 8px;
     text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #f2f2f2;
 }
 
 th {
@@ -298,36 +230,92 @@ th {
     color: white;
 }
 
-button {
-    padding: 8px;
-    margin: 4px;
+tr.selected {
+    background-color: #ddd; /* Style for the selected article */
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
     cursor: pointer;
 }
 
-/* styles.css */
-
-/* Existing styles... */
-
-/* Styles for upvote and downvote buttons */
-.upvote-button, .downvote-button {
-    background-color: #4CAF50; /* Green background for upvote */
+.pagination button.active,
+.pagination button:hover {
+    background-color: #0056b3;
     color: white;
-    border: none;
-    padding: 8px 15px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
-    cursor: pointer;
 }
 
-.downvote-button {
-    background-color: #f44336; /* Red background for downvote */
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .articles-column,
+    .comments-column,
+    .comment-form-column {
+        flex-basis: 100%;
+        height: auto; /* Adjust height for smaller devices */
+    }
 }
 
-/* Hover effect for buttons */
-.upvote-button:hover, .downvote-button:hover {
-    opacity: 0.8;
+/* Additional comment styles */
+.comment p {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.comment .timestamp {
+    color: #333;
+    margin-top: 5px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100vh; /* Adjust as needed */
+}
+
+.articles-column {
+    grid-column: 1;
+    grid-row: 1;
+    overflow-y: auto; /* Makes the articles list scrollable */
+}
+
+.article-display-column {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.comment-form-column {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-form-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#commentText {
+    flex-grow: 1;
+    resize: none; /* Prevents the textarea from being manually resized */
+    height: 50vh; /* Sets the height of the textarea to 50% of the viewport height */
 }
