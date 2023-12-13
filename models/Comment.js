@@ -42,3 +42,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Comment;
 };
+
+//test
