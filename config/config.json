@@ -3,7 +3,7 @@
     "username": "nick",
     "password": "vlookup47**",
     "database": "liminal",
-    "host": "192.168.86.42",
+    "host": "localhost",
     "port": 5432,
     "dialect": "postgres"
   },
@@ -11,7 +11,7 @@
     "username": "nick",
     "password": "vlookup47**",
     "database": "liminal",
-    "host": "192.168.86.42",
+    "host": "localhost",
     "port": 5432,
     "dialect": "postgres"
   },
@@ -19,7 +19,7 @@
     "username": "nick",
     "password": "vlookup47**",
     "database": "liminal",
-    "host": "192.168.86.42",
+    "host": "localhost",
     "port": 5432,
     "dialect": "postgres"
   }

@@ -1,7 +1,8 @@
 let currentPage = 1;
 const articlesPerPage = 10;
 let selectedArticleId = null;
-let perspectiveId = null; // New variable for perspectiveId
+
+//let perspectiveId = null; // New variable for perspectiveId
 
 window.onload = async function() {
     console.log('Page loaded');
@@ -10,9 +11,20 @@ window.onload = async function() {
 
     // Event listener for the perspectives select box
     document.getElementById('perspectiveSelect').addEventListener('change', function(event) {
-        perspectiveId = event.target.value;
+        perspectiveId = parseInt(event.target.value, 10);
+        console.log('Selected perspective ID:', perspectiveId); // Log the selected perspective ID
     });
 };
+
+document.getElementById('scrapeArticles').addEventListener('click', async function(event) {
+    try {
+        const response = await fetch('/articles/scrape_and_submit_articles');
+        const data = await response.json();
+        console.log(data.message);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
 
 async function fetchAndDisplayArticles() {
     try {
@@ -77,13 +89,13 @@ async function fetchAndDisplayPerspectives() {
         // Fetch the perspectives from the server
         const response = await fetch(`/perspectives/get_perspectives/${userId}`);
         const perspectives = await response.json();
-        const perspectiveSelect = document.getElementById('perspectiveSelect');
+        const perspectiveId = document.getElementById('perspectiveSelect');
         perspectiveSelect.innerHTML = ''; // Clear the select box
 
         // Populate the select box with perspectives
         perspectives.forEach(perspective => {
             const option = document.createElement('option');
-            option.value = perspective.id;
+            option.value = perspective.perspectiveId;
             option.textContent = perspective.perspectiveName;
             perspectiveSelect.appendChild(option);
         });
@@ -124,22 +136,18 @@ document.getElementById('articleForm').addEventListener('submit', async (event) 
 });
 
 // Function to fetch and display comments for a selected article
-async function fetchAndDisplayComments() {
-    if (!selectedArticleId) {
-        return;
-    }
-
+async function fetchAndDisplayComments(articleId) {
     try {
-        const response = await fetch(`/comments/get_comments/${selectedArticleId}`);
+        const response = await fetch(`/comments/comments/${selectedArticleId}`);
         const comments = await response.json();
-        const commentsBox = document.getElementById('commentsBox');
-        commentsBox.innerHTML = ''; // Clear the comments box
+        const commentsColumn = document.getElementById('comments-column');
+        commentsColumn.innerHTML = ''; // Clear the comments column
 
-        // Populate the comments box
+        // Populate the comments column
         comments.forEach(comment => {
             const commentElement = document.createElement('p');
-            commentElement.textContent = comment.text;
-            commentsBox.appendChild(commentElement);
+            commentElement.textContent = `${comment.text} - ${comment.Perspective.perspectiveName}`;
+            commentsColumn.appendChild(commentElement);
         });
     } catch (error) {
         console.error('Error fetching comments:', error);
@@ -147,14 +155,20 @@ async function fetchAndDisplayComments() {
 }
 
 // Function to submit a comment
-async function submitComment(commentText, perspectiveId = null) { // Default perspectiveId to null
+async function submitComment(commentText, perspectiveId ) { // Default perspectiveId to null
     try {
+        const userResponse = await fetch('/account/current', {
+            credentials: 'include'
+        });
+        const user = await userResponse.json();
+        const userId = user.id;
+
         const response = await fetch('/comments/submit_comment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ articleId: selectedArticleId, commentText, perspectiveId }),
+            body: JSON.stringify({ articleId: selectedArticleId, commentText, perspectiveId, userId }),
         });
 
         if (!response.ok) {
@@ -179,7 +193,7 @@ document.getElementById('submitComment').addEventListener('click', async functio
     event.preventDefault();
 
     const commentText = document.getElementById('commentText').value;
-    let perspectiveId = document.getElementById('perspectiveSelect').value; // Retrieve the perspectiveId directly within the function
+    let perspectiveId = document.getElementById('perspectiveSelect').value || null; // Retrieve the perspectiveId directly within the function
 
     // Check if an article is selected
     if (!selectedArticleId) {
@@ -187,10 +201,6 @@ document.getElementById('submitComment').addEventListener('click', async functio
         return;
     }
 
-    // If no perspective is selected, set perspectiveId to null
-    if (!perspectiveId) {
-        perspectiveId = null;
-    }
-
     await submitComment(commentText, perspectiveId); // Pass the perspectiveId to the submitComment function
 });
+``

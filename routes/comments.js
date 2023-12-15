@@ -1,26 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { Comment, User, Perspective } = require('../models');
+const { Comment, User, Perspective, Article } = require('../models');
 
 // GET route to fetch comments for an article
-router.get('/get_comments/:articleId', async (req, res) => {
+router.get('/comments/:articleId', async (req, res) => {
     try {
-        const articleId = req.params.articleId;
-        if (!articleId) {
-            return res.status(400).json({ message: 'Article ID is required' });
-        }
         const comments = await Comment.findAll({
-            where: { articleId: articleId },
-            include: [
-                { model: User, as: 'user' },
-                { model: Perspective, as: 'perspective' }
-            ],
-            order: [['createdAt', 'DESC']]
+            where: { articleId: Article.id },
+            include: {
+                model: Perspective,
+                attributes: ['perspectiveName']
+            }
         });
+
         res.json(comments);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

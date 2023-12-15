@@ -23,6 +23,7 @@
                 <input type="url" id="articleUrl" placeholder="Article URL">
                 <button type="submit">Submit Article</button>
             </form>
+            <button id="scrapeArticles">Scrape Articles</button>
             <table>
                 <thead>
                     <tr>
@@ -50,11 +51,11 @@
                 <div class="comment-form">
                     <div class="comment-form-top">
                         <button id="submitComment">Submit Comment</button>
-                        <select id="perspectiveSelect">
+                        <select id="perspectiveSelect" name="perspectiveId">
                             <!-- Options will be dynamically loaded here -->
                         </select>
                     </div>
-                    <textarea id="commentText" placeholder="Your comment"></textarea>
+                    <textarea id="commentText" name="commentText" placeholder="Your comment"></textarea>
                 </div>
             </div>
             <div class="comments-column">

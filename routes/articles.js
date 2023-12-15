@@ -34,4 +34,45 @@ router.get('/get_news', async (req, res) => {
     }
 });
 
+async function scrapeAndSubmitArticles() {
+    try {
+        const { data } = await axios.get('https://text.npr.org/');
+        const $ = cheerio.load(data);
+        const excludedTitles = ['Culture', 'Music', 'Contact Us', 'Privacy Policy', 'News','Permissions','Terms of Use','Go To Full Site'];
+
+        $('a').each(async (index, element) => {
+            const title = $(element).text();
+            const url = $(element).attr('href');
+
+            if (excludedTitles.includes(title) || !url) {
+                return;
+            }
+
+            const fullUrl = 'https://text.npr.org' + url;
+            const submitDate = new Date();
+
+            try {
+                await Article.findOrCreate({
+                    where: { url: fullUrl },
+                    defaults: { submitDate, title }
+                });
+            } catch (error) {
+                console.error('Error submitting article:', error);
+            }
+        });
+    } catch (error) {
+        console.error('Error scraping articles:', error);
+    }
+}
+
+router.get('/scrape_and_submit_articles', async (req, res) => {
+    try {
+        await scrapeAndSubmitArticles();
+        res.status(200).json({ message: 'Articles scraped and submitted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;
