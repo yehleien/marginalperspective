@@ -6,7 +6,7 @@ const { Comment, User, Perspective, Article } = require('../models');
 router.get('/comments/:articleId', async (req, res) => {
     try {
         const comments = await Comment.findAll({
-            where: { articleId: Article.id },
+            where: { articleId: req.params.articleId },
             include: {
                 model: Perspective,
                 attributes: ['perspectiveName']
