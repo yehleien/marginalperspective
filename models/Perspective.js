@@ -22,8 +22,19 @@ module.exports = (sequelize, DataTypes) => {
     Perspective.belongsTo(models.User, {
       foreignKey: 'userId',
       as: 'user',
+    },
+    );
+  Perspective.hasMany(models.Comment, {
+    foreignKey: 'perspectiveId',
+    as: 'perspective',
+  });
+  Perspective.associate = function(models) {
+    Perspective.hasMany(models.Comment, {
+        foreignKey: 'perspectiveId',
+        as: 'perspective'
     });
-  };
+};
+};
 
   return Perspective;
 };

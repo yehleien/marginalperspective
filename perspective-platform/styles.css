@@ -60,7 +60,13 @@ h1 {
 
 .comment-form-column {
     flex: 1;
+    order: 2; /* This will place the comment form on the left */
 }
+
+.comments-column {
+    order: 1; /* This will place the comments on the right */
+}
+
 nav {
     width: 100%;
     display: flex;
@@ -280,7 +286,7 @@ tr.selected {
     margin-top: 5px;
 }
 
-.container {
+.grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -298,8 +304,13 @@ tr.selected {
     grid-row: 1;
 }
 
+.comments-column {
+    grid-column: 2;
+    grid-row: 2;
+}
+
 .comment-form-column {
-    grid-column: 1 / span 2;
+    grid-column: 1;
     grid-row: 2;
 }
 
@@ -319,3 +330,4 @@ tr.selected {
     resize: none; /* Prevents the textarea from being manually resized */
     height: 50vh; /* Sets the height of the textarea to 50% of the viewport height */
 }
+

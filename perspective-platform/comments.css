@@ -1,0 +1,51 @@
+.comments-column {
+    border: 1px solid grey;
+    padding: 10px;
+    margin-bottom: 1px;
+}
+
+.comment-item {
+    position: relative;
+    border: 1px solid #000;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.comment-header {
+    background-color: lightgray;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vote-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+}
+
+.vote-button.voted {
+    font-weight: bold;
+}
+
+.vote-button.upvoted {
+    color: green;
+}
+
+.vote-button.downvoted {
+    color: red;
+}
+
+.perspective {
+    display: inline-block;
+    background-color: lightgrey;
+    border-radius: 50%; /* This makes the element oval-shaped */
+    padding: 5px 10px; /* This adds some space around the text */
+}
+
+.votes-display {
+    margin-right: 10px;
+}
+

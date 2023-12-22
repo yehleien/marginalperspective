@@ -1,26 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { Comment, User, Perspective } = require('../models');
+const { Comment, User, Perspective, Article } = require('../models');
 
 // GET route to fetch comments for an article
-router.get('/get_comments/:articleId', async (req, res) => {
+router.get('/comments/:articleId', async (req, res) => {
     try {
-        const articleId = req.params.articleId;
-        if (!articleId) {
-            return res.status(400).json({ message: 'Article ID is required' });
-        }
         const comments = await Comment.findAll({
-            where: { articleId: articleId },
-            include: [
-                { model: User, as: 'user' },
-                { model: Perspective, as: 'perspective' }
-            ],
-            order: [['createdAt', 'DESC']]
+            where: { articleId: req.params.articleId },
+            include: {
+                model: Perspective,
+                as: 'Perspective', // replace 'perspective' with the alias you used when defining the association
+                attributes: ['perspectiveName']
+            }
         });
+
         res.json(comments);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -45,6 +42,40 @@ router.post('/submit_comment', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+// POST route to upvote a comment
+router.post('/upvote/:commentId', async (req, res) => {
+    try {
+        const comment = await Comment.findOne({ where: { id: req.params.commentId } });
+        if (comment) {
+            comment.upvotes += 1;
+            await comment.save();
+            res.json({ success: true, upvotes: comment.upvotes });
+        } else {
+            res.status(404).json({ message: 'Comment not found' });
+        }
+    } catch (error) {
+        console.error('Error upvoting comment:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST route to downvote a comment
+router.post('/downvote/:commentId', async (req, res) => {
+    try {
+        const comment = await Comment.findOne({ where: { id: req.params.commentId } });
+        if (comment) {
+            comment.downvotes += 1;
+            await comment.save();
+            res.json({ success: true, downvotes: comment.downvotes });
+        } else {
+            res.status(404).json({ message: 'Comment not found' });
+        }
+    } catch (error) {
+        console.error('Error downvoting comment:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
