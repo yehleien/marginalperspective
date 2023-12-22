@@ -19,7 +19,7 @@ if (config.use_env_variable) {
 fs
   .readdirSync(__dirname)
   .filter(file => {
-    console.log(file); // Added this line
+   // console.log(file); // Added this line
     return (
       file.indexOf('.') !== 0 &&
       file !== basename &&
@@ -45,6 +45,6 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-console.log(db); // Add this line
+//console.log(db); // Add this line
 
 module.exports = db;
