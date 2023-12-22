@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "daiatqjn",
+    "password": "vNldo-Gix5xQ1Zem-Op24riTua2ya-7L",
+    "database": "daiatqjn",
+    "host": "berry.db.elephantsql.com",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "daiatqjn",
+    "password": "vNldo-Gix5xQ1Zem-Op24riTua2ya-7L",
+    "database": "daiatqjn",
+    "host": "berry.db.elephantsql.com",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "daiatqjn",
+    "password": "vNldo-Gix5xQ1Zem-Op24riTua2ya-7L",
+    "database": "daiatqjn",
+    "host": "berry.db.elephantsql.com",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}
