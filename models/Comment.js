@@ -20,6 +20,22 @@ module.exports = (sequelize, DataTypes) => {
     perspectiveId: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    upvotes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    downvotes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    parentID: {
+      type: DataTypes.INTEGER,
+      defaultValue: null
+    },
+    replyCount: {
+      type:DataTypes.INTEGER,
+      default: 0
     }
   }, {
     timestamps: true
@@ -36,11 +52,15 @@ module.exports = (sequelize, DataTypes) => {
     });
     Comment.belongsTo(models.Perspective, {
       foreignKey: 'perspectiveId',
-      as: 'perspective',
+      as: 'Perspective',
     });
+    Comment.associate = function(models) {
+      Comment.belongsTo(models.Perspective, {
+          foreignKey: 'perspectiveId',
+          as: 'perspective'
+      });
+  };
   };
 
   return Comment;
 };
-
-//test

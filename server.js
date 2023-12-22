@@ -49,9 +49,9 @@ app.get('/articles/content/:url', async (req, res) => {
         let content = $('body').text();
 
         // Remove the junk at the beginning of the article
-        const articleStart = content.indexOf('See More Videos');
+        const articleStart = content.indexOf('>');
         if (articleStart !== -1) {
-            content = content.substring(articleStart + 'See More Videos'.length);
+            content = content.substring(articleStart + 'Topics'.length);
         }
 
         res.json({ content });
@@ -107,6 +107,29 @@ app.post('/account/signup', (req, res) => {
         }
     });
 });
+
+async function scrapeAndSubmitArticles() {
+    try {
+        const { data } = await axios.get('https://text.npr.org/');
+        const $ = cheerio.load(data);
+        const articles = [];
+
+        $('li').each((index, element) => {
+            const title = $(element).text();
+            articles.push(title);
+        });
+
+        for (let article of articles) {
+            try {
+                await submitArticle(article);
+            } catch (error) {
+                console.error('Error submitting article:', error);
+            }
+        }
+    } catch (error) {
+        console.error('Error scraping articles:', error);
+    }
+}
 
 app.get('/account/current', (req, res) => {
     const userId = req.session.userId;

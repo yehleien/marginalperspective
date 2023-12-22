@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Liminal</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="comments.css">
 </head>
 <body>
     <header>
@@ -16,13 +17,14 @@
         </nav>
     </header>
 
-    <main class="container">
+    <div class="grid-container">
         <!-- Left Column for Articles List -->
         <section id="articlesList" class="articles-column">
             <form id="articleForm">
                 <input type="url" id="articleUrl" placeholder="Article URL">
                 <button type="submit">Submit Article</button>
             </form>
+            <button id="scrapeArticles">Scrape Articles</button>
             <table>
                 <thead>
                     <tr>
@@ -44,24 +46,24 @@
             <iframe id="articleFrame" style="width:100%; height:100%;" title="Article Display"></iframe>
         </aside>
 
-        <!-- Bottom Column for Comment Form and Comments -->
-        <aside class="comments-container">
-            <div class="comment-form-column">
-                <div class="comment-form">
-                    <div class="comment-form-top">
-                        <button id="submitComment">Submit Comment</button>
-                        <select id="perspectiveSelect">
-                            <!-- Options will be dynamically loaded here -->
-                        </select>
-                    </div>
-                    <textarea id="commentText" placeholder="Your comment"></textarea>
+        <!-- Bottom Left Column for Comment Form -->
+        <aside class="comment-form-column">
+            <div class="comment-form">
+                <div class="comment-form-top">
+                    <button id="submitComment">Submit Comment</button>
+                    <select id="perspectiveSelect" name="perspectiveId">
+                        <!-- Options will be dynamically loaded here -->
+                    </select>
                 </div>
-            </div>
-            <div class="comments-column">
-                <!-- Comments will be dynamically loaded here -->
+                <textarea id="commentText" name="commentText" placeholder="Your comment"></textarea>
             </div>
         </aside>
-    </main>
+
+        <!-- Bottom Right Column for Comments -->
+        <aside class="comments-column">
+            <!-- Comments will be dynamically loaded here -->
+        </aside>
+    </div>
 
     <script src="home.js"></script>
 </body>

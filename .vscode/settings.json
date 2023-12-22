@@ -1,12 +1,23 @@
 {
-  "files.exclude": {
-    "amplify/.config": true,
-    "amplify/**/*-parameters.json": true,
-    "amplify/**/amplify.state": true,
-    "amplify/**/transform.conf.json": true,
-    "amplify/#current-cloud-backend": true,
-    "amplify/backend/amplify-meta.json": true,
-    "amplify/backend/awscloudformation": true
-  },
-  "chatgpt.lang": "en"
+    "chatgpt.lang": "en",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "berry.db.elephantsql.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "liminal",
+            "group": "berry.db.elephantsql.com",
+            "database": "daiatqjn",
+            "username": "daiatqjn",
+            "password": "vNldo-Gix5xQ1Zem-Op24riTua2ya-7L"
+        }
+    ],
+    "webPreview.mediaScreen": {
+        "SM": 640,
+        "MD": 768,
+        "LG": 1024,
+        "XL": 1280,
+        "2XL": 1536
+    }
 }

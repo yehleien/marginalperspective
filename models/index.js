@@ -48,5 +48,3 @@ db.Sequelize = Sequelize;
 console.log(db); // Add this line
 
 module.exports = db;
-
-

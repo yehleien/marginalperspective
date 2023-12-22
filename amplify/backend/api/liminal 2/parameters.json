@@ -1,5 +1,0 @@
-{
-  "AppSyncApiName": "liminal",
-  "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
-}
