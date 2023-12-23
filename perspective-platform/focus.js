@@ -75,21 +75,24 @@ async function fetchAndDisplayCommentsForFocusPage() {
             upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`;
             upvoteButton.className = `vote-button ${comment.userHasUpvoted ? 'upvoted' : ''}`;
             upvoteButton.addEventListener('click', async () => {
-                try {
-                    const response = await fetch(`/comments/upvote/${comment.id}`, {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        upvoteButton.innerHTML = `&#x25B2; (${data.upvotes})`;
-                        upvoteButton.classList.add('upvoted');
-                        downvoteButton.classList.remove('downvoted');
-                    } else {
-                        alert(data.error);
+                if (!comment.userHasUpvoted) {
+                    try {
+                        const response = await fetch(`/comments/upvote/${comment.id}`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            upvoteButton.innerHTML = `&#x25B2; (${data.upvotes})`;
+                            upvoteButton.classList.add('upvoted');
+                            downvoteButton.classList.remove('downvoted');
+                            comment.increment('upvotes');
+                        } else {
+                            alert(data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error upvoting comment:', error);
                     }
-                } catch (error) {
-                    console.error('Error upvoting comment:', error);
                 }
             });
 
@@ -97,21 +100,24 @@ async function fetchAndDisplayCommentsForFocusPage() {
             downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`;
             downvoteButton.className = `vote-button ${comment.userHasDownvoted ? 'downvoted' : ''}`;
             downvoteButton.addEventListener('click', async () => {
-                try {
-                    const response = await fetch(`/comments/downvote/${comment.id}`, {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        downvoteButton.innerHTML = `&#x25BC; (${data.downvotes})`;
-                        downvoteButton.classList.add('downvoted');
-                        upvoteButton.classList.remove('upvoted');
-                    } else {
-                        alert(data.error);
+                if (!comment.userHasDownvoted) {
+                    try {
+                        const response = await fetch(`/comments/downvote/${comment.id}`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            downvoteButton.innerHTML = `&#x25BC; (${data.downvotes})`;
+                            downvoteButton.classList.add('downvoted');
+                            upvoteButton.classList.remove('upvoted');
+                            comment.increment('downvotes');
+                        } else {
+                            alert(data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error downvoting comment:', error);
                     }
-                } catch (error) {
-                    console.error('Error downvoting comment:', error);
                 }
             });
 

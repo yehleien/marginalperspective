@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Comment, User, Perspective, Article } = require('../models');
+const { Comment, User, Perspective, Article, Vote } = require('../models');
 
 // GET route to fetch comments for an article
 router.get('/comments/:articleId', async (req, res) => {
@@ -48,14 +48,37 @@ router.post('/submit_comment', async (req, res) => {
 // POST route to upvote a comment
 router.post('/upvote/:commentId', async (req, res) => {
     try {
-        const comment = await Comment.findOne({ where: { id: req.params.commentId } });
-        if (comment) {
-            comment.upvotes += 1;
-            await comment.save();
-            res.json({ success: true, upvotes: comment.upvotes });
+        const userId = req.session.userId; // replace with how you get the user's ID
+        const { commentId } = req.params;
+
+        // Fetch the comment from the database
+        const comment = await Comment.findByPk(commentId);
+
+        const existingVote = await Vote.findOne({ where: { userId, commentId } });
+        if (existingVote) {
+            if (existingVote.is_upvote) {
+                // User has already upvoted this comment
+                return res.json({ success: false, error: 'You have already upvoted this comment' });
+            } else {
+                // User has downvoted this comment, so we'll change their vote to an upvote
+                existingVote.is_upvote = true;
+                await existingVote.save();
+
+                // Decrement downvotes and increment upvotes
+                comment.decrement('downvotes');
+                comment.increment('upvotes');
+            }
         } else {
-            res.status(404).json({ message: 'Comment not found' });
+            // User has not voted on this comment, so we'll create a new upvote
+            await Vote.create({ userId, commentId, is_upvote: true });
+
+            // Increment upvotes
+            comment.increment('upvotes');
         }
+
+        await comment.save();
+
+        res.json({ success: true, upvotes: comment.upvotes });
     } catch (error) {
         console.error('Error upvoting comment:', error);
         res.status(500).json({ message: 'Server error' });
@@ -65,14 +88,37 @@ router.post('/upvote/:commentId', async (req, res) => {
 // POST route to downvote a comment
 router.post('/downvote/:commentId', async (req, res) => {
     try {
-        const comment = await Comment.findOne({ where: { id: req.params.commentId } });
-        if (comment) {
-            comment.downvotes += 1;
-            await comment.save();
-            res.json({ success: true, downvotes: comment.downvotes });
+        const userId = req.session.userId; // replace with how you get the user's ID
+        const { commentId } = req.params;
+
+        // Fetch the comment from the database
+        const comment = await Comment.findByPk(commentId);
+
+        const existingVote = await Vote.findOne({ where: { userId, commentId } });
+        if (existingVote) {
+            if (!existingVote.is_upvote) {
+                // User has already downvoted this comment
+                return res.json({ success: false, error: 'You have already downvoted this comment' });
+            } else {
+                // User has upvoted this comment, so we'll change their vote to a downvote
+                existingVote.is_upvote = false;
+                await existingVote.save();
+
+                // Decrement upvotes and increment downvotes
+                comment.decrement('upvotes');
+                comment.increment('downvotes');
+            }
         } else {
-            res.status(404).json({ message: 'Comment not found' });
+            // User has not voted on this comment, so we'll create a new downvote
+            await Vote.create({ userId, commentId, is_upvote: false });
+
+            // Increment downvotes
+            comment.increment('downvotes');
         }
+
+        await comment.save();
+
+        res.json({ success: true, downvotes: comment.downvotes });
     } catch (error) {
         console.error('Error downvoting comment:', error);
         res.status(500).json({ message: 'Server error' });
