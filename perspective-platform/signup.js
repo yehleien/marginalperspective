@@ -1,25 +1,23 @@
 document.getElementById('signupForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const messageElement = document.getElementById('message');
+    const username = document.getElementById('signupUsername').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
 
     fetch('/account/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
+        body: JSON.stringify({ username, email, password })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            messageElement.textContent = 'Signup successful!';
-            // Redirect to another page or update the UI as needed
+            // If signup is successful, redirect to the account page
+            window.location.href = '/account.html';
         } else {
-            messageElement.textContent = 'Signup failed: ' + data.error;
+            // Handle signup error
+            console.error('Signup error:', data.error);
         }
-    })
-    .catch(error => {
-        console.error('Error during signup:', error);
-        messageElement.textContent = 'Error during signup.';
     });
 });

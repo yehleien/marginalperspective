@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account - Liminal</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="account.css">
 </head>
 <body>
     <header>
@@ -13,28 +14,31 @@
             <a href="home.html" class="header-link">Home</a>
             <a href="account.html" class="header-link">Account</a>
             <a href="index.html" class="header-link">Logout</a>
+            <a href="focus.html" class="header-link">Focus</a>
         </nav>
     </header>
-
     <h2 id="welcomeMessage"></h2>
 
-    <h2>Your Perspectives</h2>
-    <table>
+    <table id="perspectivesTable">
         <thead>
             <tr>
                 <th>Perspective Name</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
             </tr>
         </thead>
-
-        <form id="addPerspectiveForm">
-            <input type="text" id="perspectiveName" placeholder="Perspective Name">
-            <button type="submit">Add Perspective</button>
-        </form>
-
-        <tbody id="perspectivesList">
+        <tbody id="perspectivesBody">
             <!-- Perspectives will be dynamically loaded here -->
         </tbody>
     </table>
+
+    <!-- Update form -->
+    <form id="updatePerspectiveForm" style="display: none;">
+        <input type="hidden" id="updatePerspectiveId">
+        <input type="text" id="updatePerspectiveName" placeholder="New Perspective Name">
+        <button type="submit">Update Perspective</button>
+    </form>
+
     <script src="account.js"></script>
 </body>
 </html>

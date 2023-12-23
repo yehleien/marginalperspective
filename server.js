@@ -98,7 +98,21 @@ app.post('/account/signup', (req, res) => {
             User.create({ username, email, password: hashedPassword })
                 .then(user => {
                     req.session.userId = user.id;
-                    res.json({ success: true });
+
+                    // After creating the user, create the default perspectives
+                    const defaultPerspectives = [
+                        { userId: user.id, perspectiveName: 'Default 1', /* other fields */ },
+                        { userId: user.id, perspectiveName: 'Default 2', /* other fields */ },
+                        // Add more default perspectives as needed
+                    ];
+                    Perspective.bulkCreate(defaultPerspectives)
+                        .then(() => {
+                            res.json({ success: true });
+                        })
+                        .catch(error => {
+                            console.error('Error during perspective creation:', error);
+                            res.json({ success: false, error: 'Server error' });
+                        });
                 })
                 .catch(error => {
                     console.error('Error during signup:', error);
@@ -154,5 +168,8 @@ sequelize.authenticate()
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'index.html')));
 app.get('/home', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'home.html')));
 app.get('/account', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'account.html')));
+app.get('/signup', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'signup.html')));
+app.get('/focus', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'signup.html')));
+
 
 app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));

@@ -27,11 +27,11 @@ router.post('/add_perspective', (req, res) => {
         });
 });
 
-router.put('/update_perspective/:id', (req, res) => {
+router.put('/update_perspective/:perspectiveId', (req, res) => {
     const { perspectiveName } = req.body;
-    const id = req.params.id;
+    const perspectiveId = req.params.perspectiveId;
 
-    Perspective.update({ perspectiveName }, { where: { id } })
+    Perspective.update({ perspectiveName }, { where: { perspectiveId } })
         .then(() => {
             res.json({ success: true });
         })

@@ -1,0 +1,91 @@
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px; /* Adjust to match your header height */
+    background-color: #f8f8f8; /* Adjust to match your design */
+    padding: 0 10px;
+}
+
+.toolbar-button {
+    flex: 1;
+    max-width: 10%;
+}
+
+.toolbar-title {
+    flex: 8;
+    text-align: center;
+}
+.main-content {
+    display: flex;
+}
+
+.left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-container {
+    flex: 1;
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 10px;
+}
+
+.add-comment-container {
+    flex: 1;
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 10px;
+}
+
+.comments-container {
+    flex: 2;
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 10px;
+}
+.perspective {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.comment-item {
+    display: flex;
+}
+
+.vote-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.perspective {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+.comment-item {
+    display: flex;
+}
+
+.vote-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.vote-button.upvoted {
+    color: green;
+}
+
+.vote-button.downvoted {
+    color: red;
+}
+
+.perspective {
+    font-weight: bold;
+    font-size: 1.5em;
+}
