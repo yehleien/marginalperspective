@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const { sequelize, Sequelize, db } = require('./models/index');
@@ -29,9 +30,12 @@ app.use(cookieParser());
 app.use(express.static('perspective-platform'));
 app.use(session({
     secret: '69', // replace with your own secret key
+    store: new SequelizeStore({
+        db: sequelize
+    }),
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // set to true if you're using https
+    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 } // set to true if you're using https, 1 week max age
 }));
 
 console.log("Express app setup complete");
@@ -169,7 +173,7 @@ app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platf
 app.get('/home', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'home.html')));
 app.get('/account', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'account.html')));
 app.get('/signup', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'signup.html')));
-app.get('/focus', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'signup.html')));
+app.get('/focus', (_req, res) => res.sendFile(path.join(__dirname, 'perspective-platform', 'focus.html')));
 
 
 app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));

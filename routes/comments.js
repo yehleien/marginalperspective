@@ -21,6 +21,28 @@ router.get('/comments/:articleId', async (req, res) => {
     }
 });
 
+// GET route to fetch a single comment by its ID
+router.get('/:commentId', async (req, res) => {
+    try {
+        const comment = await Comment.findByPk(req.params.commentId, {
+            include: {
+                model: Perspective,
+                as: 'Perspective',
+                attributes: ['perspectiveName']
+            }
+        });
+
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        res.json(comment);
+    } catch (error) {
+        console.error('Error fetching comment:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // POST route to create a new comment
 router.post('/submit_comment', async (req, res) => {
     const { articleId, commentText, userId, perspectiveId } = req.body;
@@ -51,13 +73,12 @@ router.post('/upvote/:commentId', async (req, res) => {
         const userId = req.session.userId; // replace with how you get the user's ID
         const { commentId } = req.params;
 
-        // Fetch the comment from the database
         const comment = await Comment.findByPk(commentId);
-
         const existingVote = await Vote.findOne({ where: { userId, commentId } });
+
         if (existingVote) {
             if (existingVote.is_upvote) {
-                // User has already upvoted this comment
+                // User has already upvoted this comment, so we do nothing
                 return res.json({ success: false, error: 'You have already upvoted this comment' });
             } else {
                 // User has downvoted this comment, so we'll change their vote to an upvote
@@ -65,15 +86,15 @@ router.post('/upvote/:commentId', async (req, res) => {
                 await existingVote.save();
 
                 // Decrement downvotes and increment upvotes
-                comment.decrement('downvotes');
-                comment.increment('upvotes');
+                await comment.decrement('downvotes');
+                await comment.increment('upvotes');
             }
         } else {
             // User has not voted on this comment, so we'll create a new upvote
             await Vote.create({ userId, commentId, is_upvote: true });
 
             // Increment upvotes
-            comment.increment('upvotes');
+            await comment.increment('upvotes');
         }
 
         await comment.save();
@@ -91,13 +112,12 @@ router.post('/downvote/:commentId', async (req, res) => {
         const userId = req.session.userId; // replace with how you get the user's ID
         const { commentId } = req.params;
 
-        // Fetch the comment from the database
         const comment = await Comment.findByPk(commentId);
-
         const existingVote = await Vote.findOne({ where: { userId, commentId } });
+
         if (existingVote) {
             if (!existingVote.is_upvote) {
-                // User has already downvoted this comment
+                // User has already downvoted this comment, so we do nothing
                 return res.json({ success: false, error: 'You have already downvoted this comment' });
             } else {
                 // User has upvoted this comment, so we'll change their vote to a downvote
@@ -105,15 +125,15 @@ router.post('/downvote/:commentId', async (req, res) => {
                 await existingVote.save();
 
                 // Decrement upvotes and increment downvotes
-                comment.decrement('upvotes');
-                comment.increment('downvotes');
+                await comment.decrement('upvotes');
+                await comment.increment('downvotes');
             }
         } else {
             // User has not voted on this comment, so we'll create a new downvote
             await Vote.create({ userId, commentId, is_upvote: false });
 
             // Increment downvotes
-            comment.increment('downvotes');
+            await comment.increment('downvotes');
         }
 
         await comment.save();

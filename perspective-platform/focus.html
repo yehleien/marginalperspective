@@ -28,7 +28,13 @@
                 <!-- Filters for comments go here -->
             </div>
             <div class="add-comment-container">
-                <!-- Add a comment form goes here -->
+                <div id="commentFormContainer">
+                    <textarea id="commentText" placeholder="Write your comment here..."></textarea>
+                    <button id="submitComment">Submit Comment</button>
+                    <select id="perspectiveSelect" name="perspectiveId">
+                        <!-- Options will be dynamically loaded here -->
+                    </select>
+                </div>            
             </div>
         </div>
         <div class="comments-container">

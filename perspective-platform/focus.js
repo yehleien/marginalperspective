@@ -35,25 +35,36 @@ document.getElementById('nextArticle').addEventListener('click', function() {
     }
 });
 
-async function submitComment() {
-    const commentText = document.getElementById('commentText').value;
-    const response = await fetch('/comments/submit_comment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            articleId: articles[currentArticleIndex].id,
-            text: commentText
-        })
-    });
-    const data = await response.json();
-    if (data.success) {
-        // Comment submitted successfully
-        fetchAndDisplayCommentsForFocusPage();
-    } else {
-        // Handle error
-        console.error('Error submitting comment:', data.error);
+async function submitComment(commentText, perspectiveId) {
+    try {
+        const userResponse = await fetch('/account/current', {
+            credentials: 'include'
+        });
+        const user = await userResponse.json();
+        const userId = user.id;
+
+        const response = await fetch('/comments/submit_comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ articleId: articles[currentArticleIndex].id, commentText, perspectiveId, userId }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Comment submitted:', data);
+
+        // Clear the comment text field
+        document.getElementById('commentText').value = '';
+
+        // Refresh the comments list
+        await fetchAndDisplayCommentsForFocusPage();
+    } catch (error) {
+        console.error('Error submitting comment:', error);
     }
 }
 
@@ -64,7 +75,11 @@ async function fetchAndDisplayCommentsForFocusPage() {
         const commentsContainer = document.querySelector('.comments-container');
         commentsContainer.innerHTML = '';
 
-        comments.forEach(comment => {
+        comments.forEach(async comment => {
+            const updatedComment = await fetchComment(comment.id);
+            comment.upvotes = updatedComment.upvotes;
+            comment.downvotes = updatedComment.downvotes;
+
             const commentElement = document.createElement('div');
             commentElement.className = 'comment-item';
 
@@ -74,6 +89,9 @@ async function fetchAndDisplayCommentsForFocusPage() {
             const upvoteButton = document.createElement('button');
             upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`;
             upvoteButton.className = `vote-button ${comment.userHasUpvoted ? 'upvoted' : ''}`;
+            if (comment.userHasUpvoted) {
+                upvoteButton.style.backgroundColor = 'green';
+            }
             upvoteButton.addEventListener('click', async () => {
                 if (!comment.userHasUpvoted) {
                     try {
@@ -86,7 +104,8 @@ async function fetchAndDisplayCommentsForFocusPage() {
                             upvoteButton.innerHTML = `&#x25B2; (${data.upvotes})`;
                             upvoteButton.classList.add('upvoted');
                             downvoteButton.classList.remove('downvoted');
-                            comment.increment('upvotes');
+                            await comment.decrement('downvotes');
+                            await comment.increment('upvotes');
                         } else {
                             alert(data.error);
                         }
@@ -99,6 +118,9 @@ async function fetchAndDisplayCommentsForFocusPage() {
             const downvoteButton = document.createElement('button');
             downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`;
             downvoteButton.className = `vote-button ${comment.userHasDownvoted ? 'downvoted' : ''}`;
+            if (comment.userHasDownvoted) {
+                downvoteButton.style.backgroundColor = 'red';
+            }
             downvoteButton.addEventListener('click', async () => {
                 if (!comment.userHasDownvoted) {
                     try {
@@ -111,7 +133,8 @@ async function fetchAndDisplayCommentsForFocusPage() {
                             downvoteButton.innerHTML = `&#x25BC; (${data.downvotes})`;
                             downvoteButton.classList.add('downvoted');
                             upvoteButton.classList.remove('upvoted');
-                            comment.increment('downvotes');
+                            await comment.decrement('upvotes');
+                            await comment.increment('downvotes');
                         } else {
                             alert(data.error);
                         }
@@ -144,6 +167,53 @@ async function fetchAndDisplayCommentsForFocusPage() {
         console.error('Error fetching comments:', error);
     }
 }
+
+async function fetchComment(commentId) {
+    try {
+        const response = await fetch(`/comments/${commentId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const comment = await response.json();
+        return comment;
+    } catch (error) {
+        console.error(`Error fetching comment with ID ${commentId}:`, error);
+    }
+}
+
+async function fetchAndDisplayPerspectives() {
+    try {
+        const userResponse = await fetch('/account/current', {
+            credentials: 'include'
+        });
+        const user = await userResponse.json();
+        const userId = user.id;
+
+        const response = await fetch(`/perspectives/get_perspectives/${userId}`);
+        const perspectives = await response.json();
+        const perspectiveSelect = document.getElementById('perspectiveSelect');
+        perspectiveSelect.innerHTML = '';
+
+        perspectives.forEach(perspective => {
+            const option = document.createElement('option');
+            option.value = perspective.perspectiveId;
+            option.textContent = perspective.perspectiveName;
+            perspectiveSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching perspectives:', error);
+    }
+}
+
+window.onload = async function() {
+    await fetchAndDisplayPerspectives();
+    document.getElementById('submitComment').addEventListener('click', async function(event) {
+        event.preventDefault();
+        const commentText = document.getElementById('commentText').value;
+        let perspectiveId = document.getElementById('perspectiveSelect').value || null; // Retrieve the perspectiveId directly within the function
+        await submitComment(commentText, perspectiveId); // Pass the perspectiveId to the submitComment function
+    });
+};
 
 // Fetch and display articles when the page loads
 fetchAndDisplayArticles();
