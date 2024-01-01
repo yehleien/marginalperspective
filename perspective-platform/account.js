@@ -126,3 +126,51 @@ document.getElementById('updatePerspectiveForm').addEventListener('submit', func
 
     updatePerspective(perspectiveId, name);
 });
+document.getElementById('addPerspectiveButton').addEventListener('click', function() {
+    const perspectivesTable = document.getElementById('perspectivesTable');
+
+    // Create a new row
+    const row = perspectivesTable.insertRow();
+
+    // Create a cell for the perspective name
+    const nameCell = row.insertCell();
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Enter perspective name';
+    nameCell.appendChild(nameInput);
+
+    // Create a cell for the "Save" button
+    const saveCell = row.insertCell();
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save';
+    saveButton.addEventListener('click', async function() {
+        const perspectiveName = nameInput.value;
+
+        // Fetch the current user to get the userId
+        const userResponse = await fetch('/account/current', {
+            credentials: 'include' // include credentials to send the session cookie
+        });
+        const user = await userResponse.json();
+        const userId = user.id;
+
+        // Add the new perspective to the database
+        const response = await fetch('/perspectives/add_perspective', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ perspectiveName, userId }) // Include userId here
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Refresh the perspectives list
+            fetchAndDisplayPerspectives();
+        } else {
+            // Display an error message
+            console.error('Error:', data.error);
+        }
+    });
+    saveCell.appendChild(saveButton);
+});

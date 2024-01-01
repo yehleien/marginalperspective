@@ -179,4 +179,16 @@ router.post('/downvote/:commentId', async (req, res) => {
     }
 });
 
+router.get('/replies/:id', async (req, res) => {
+    const parentID = req.params.id;
+
+    // Fetch the replies from the database
+    const replies = await Comment.findAll({
+        where: { parentID },
+        order: [['createdAt', 'DESC']] // Order the replies by creation date
+    });
+
+    res.json(replies);
+});
+
 module.exports = router;

@@ -1,7 +1,17 @@
 let articles = [];
 let currentArticleIndex = 0;
+let currentlyViewedCommentId = null; // Add this line at the top of your script
+
 import upvote from './upvote.js';
 import downvote from './downvote.js';
+
+async function getCurrentUser() {
+    const response = await fetch('/account/current', {
+        credentials: 'include'
+    });
+    const user = await response.json();
+    return user;
+}
 
 async function fetchAndDisplayArticle() {
     try {
@@ -41,10 +51,7 @@ document.getElementById('nextArticle').addEventListener('click', function() {
 
 async function submitComment(commentText, perspectiveId) {
     try {
-        const userResponse = await fetch('/account/current', {
-            credentials: 'include'
-        });
-        const user = await userResponse.json();
+        const user = await getCurrentUser();
         const userId = user.id;
 
         const response = await fetch('/comments/submit_comment', {
@@ -52,7 +59,13 @@ async function submitComment(commentText, perspectiveId) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ articleId: articles[currentArticleIndex].id, commentText, perspectiveId, userId }),
+            body: JSON.stringify({ 
+                articleId: articles[currentArticleIndex].id, 
+                commentText, 
+                perspectiveId, 
+                userId, 
+                parentID: selectedParentId // Include the selectedParentId
+            }),
         });
 
         if (!response.ok) {
@@ -62,18 +75,129 @@ async function submitComment(commentText, perspectiveId) {
         const data = await response.json();
         console.log('Comment submitted:', data);
 
-            // Append the new comment to the comments container
-    const commentsContainer = document.getElementById('commentsContainer');
-    const commentElement = createCommentElement(data); // You'll need to implement this function
-    commentsContainer.appendChild(commentElement);
-        // Clear the comment text field
-        document.getElementById('commentText').value = '';
-
-        // Refresh the comments list
-        await fetchAndDisplayCommentsForFocusPage();
+        // Refresh the page
+        location.reload();
     } catch (error) {
         console.error('Error submitting comment:', error);
     }
+}
+
+let selectedParentId = null;
+
+function createVoteButtons(comment, currentUserId) {
+    const voteContainer = document.createElement('div');
+    voteContainer.className = 'vote-container';
+
+    const upvoteButton = document.createElement('button');
+    upvoteButton.className = 'vote-button';
+    upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`;
+    upvoteButton.addEventListener('click', () => upvote(comment, upvoteButton, downvoteButton));
+
+    const downvoteButton = document.createElement('button');
+    downvoteButton.className = 'vote-button';
+    downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`;
+    downvoteButton.addEventListener('click', () => downvote(comment, upvoteButton, downvoteButton));
+
+    // Check if the current user has voted on the comment
+    const currentUserVote = comment.votes ? comment.votes.find(vote => vote.userId === currentUserId) : null;
+    if (currentUserVote) {
+        if (currentUserVote.is_upvote) {
+            upvoteButton.classList.add('upvoted');
+            downvoteButton.classList.remove('downvoted');
+        } else {
+            downvoteButton.classList.add('downvoted');
+            upvoteButton.classList.remove('upvoted');
+        }
+    }
+
+    voteContainer.appendChild(upvoteButton);
+    voteContainer.appendChild(downvoteButton);
+
+    return voteContainer;
+}
+
+function createRepliesLink(comment, parentCommentElement, currentUserId) {
+    const viewRepliesLink = document.createElement('a');
+    viewRepliesLink.textContent = `View replies (${comment.replyCount})`;
+    viewRepliesLink.href = '#';
+
+    const repliesContainer = document.createElement('div');
+    repliesContainer.className = 'replies-container';
+    repliesContainer.style.display = 'none'; // Hide the replies container initially
+
+    viewRepliesLink.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        if (viewRepliesLink.textContent.startsWith('Hide')) {
+            // If the replies are currently visible, hide them
+            viewRepliesLink.textContent = `View replies (${comment.replyCount})`;
+            repliesContainer.style.display = 'none';
+        } else {
+            // If the replies are currently hidden, show them
+            viewRepliesLink.textContent = `Hide replies (${comment.replyCount})`;
+            repliesContainer.style.display = '';
+
+            if (repliesContainer.childElementCount === 0) {
+                // If the replies haven't been fetched yet, fetch them
+                const response = await fetch(`/comments/replies/${comment.id}`);
+                const replies = await response.json();
+
+                replies.forEach(reply => {
+                    const replyElement = createCommentElement(reply, currentUserId);
+                    repliesContainer.appendChild(replyElement);
+                });
+            }
+        }
+    });
+
+    parentCommentElement.appendChild(viewRepliesLink);
+    parentCommentElement.appendChild(repliesContainer);
+}
+
+function createSelectParentCheckbox(comment) {
+    const selectParentCheckbox = document.createElement('input');
+    selectParentCheckbox.type = 'checkbox';
+    selectParentCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            selectedParentId = comment.id;
+        } else if (selectedParentId === comment.id) {
+            selectedParentId = null;
+        }
+    });
+
+    return selectParentCheckbox;
+}
+
+function createCommentElement(comment, currentUserId) {
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment-item';
+
+    const voteContainer = createVoteButtons(comment, currentUserId);
+    commentElement.appendChild(voteContainer);
+
+    const perspectiveElement = document.createElement('p');
+    perspectiveElement.className = 'perspective';
+    perspectiveElement.textContent = comment.Perspective.perspectiveName;
+
+    const textElement = document.createElement('p');
+    textElement.textContent = comment.text;
+
+    const commentContent = document.createElement('div');
+    commentContent.appendChild(perspectiveElement);
+    commentContent.appendChild(textElement);
+
+    commentElement.appendChild(commentContent);
+
+    // Add a "view replies" link if the comment has replies
+    if (comment.replyCount >= 0) {
+        createRepliesLink(comment, commentElement, currentUserId);
+
+        // Add a checkbox to select the comment as the parent for a new comment
+        const selectParentCheckbox = createSelectParentCheckbox(comment);
+        commentElement.appendChild(selectParentCheckbox);
+    }
+
+    return commentElement;
 }
 
 async function fetchAndDisplayCommentsForFocusPage() {
@@ -84,59 +208,14 @@ async function fetchAndDisplayCommentsForFocusPage() {
         const response = await fetch(`/comments/comments/${articles[currentArticleIndex].id}`);
         const comments = await response.json();
 
-        const userResponse = await fetch('/account/current', {
-            credentials: 'include'
-        });
-        const user = await userResponse.json();
+        const user = await getCurrentUser();
         const currentUserId = user.id;
 
-        comments.forEach(comment => {
-            const commentElement = document.createElement('div');
-            commentElement.className = 'comment-item';
+        // Filter out comments that have a parentID
+        const topLevelComments = comments.filter(comment => comment.parentID === null);
 
-            const voteContainer = document.createElement('div');
-            voteContainer.className = 'vote-container';
-
-            const upvoteButton = document.createElement('button');
-            upvoteButton.className = 'vote-button';
-            upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`;
-            upvoteButton.addEventListener('click', () => upvote(comment, upvoteButton, downvoteButton));
-
-            const downvoteButton = document.createElement('button');
-            downvoteButton.className = 'vote-button';
-            downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`;
-            downvoteButton.addEventListener('click', () => downvote(comment, upvoteButton, downvoteButton));
-
-            // Check if the current user has voted on the comment
-            const currentUserVote = comment.votes.find(vote => vote.userId === currentUserId); // currentUserId should be the ID of the logged-in user
-
-            if (currentUserVote) {
-                if (currentUserVote.is_upvote) {
-                    upvoteButton.classList.add('upvoted');
-                    downvoteButton.classList.remove('downvoted');
-                } else {
-                    downvoteButton.classList.add('downvoted');
-                    upvoteButton.classList.remove('upvoted');
-                }
-            }
-
-            voteContainer.appendChild(upvoteButton);
-            voteContainer.appendChild(downvoteButton);
-
-            const perspectiveElement = document.createElement('p');
-            perspectiveElement.className = 'perspective';
-            perspectiveElement.textContent = comment.Perspective.perspectiveName;
-
-            const textElement = document.createElement('p');
-            textElement.textContent = comment.text;
-
-            const commentContent = document.createElement('div');
-            commentContent.appendChild(perspectiveElement);
-            commentContent.appendChild(textElement);
-
-            commentElement.appendChild(voteContainer);
-            commentElement.appendChild(commentContent);
-
+        topLevelComments.forEach(comment => {
+            const commentElement = createCommentElement(comment, currentUserId);
             commentsContainer.appendChild(commentElement);
         });
     } catch (error) {
@@ -194,5 +273,5 @@ window.onload = async function() {
     });
 
     // Fetch and display articles when the page loads
-    fetchAndDisplayArticle();
-}
+    fetchAndDisplayArticle();   
+};  

@@ -50,6 +50,12 @@
     padding: 10px; /* Add some padding around the toolbar */
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
 #commentText {
     flex-grow: 1;
     resize: none; /* This will prevent the user from resizing the textarea */

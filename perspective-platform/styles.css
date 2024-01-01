@@ -331,3 +331,8 @@ tr.selected {
     height: 50vh; /* Sets the height of the textarea to 50% of the viewport height */
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
