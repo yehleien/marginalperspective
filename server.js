@@ -10,7 +10,7 @@ const axios = require('axios'); // Added axios for web scraping
 const cheerio = require('cheerio'); // Added cheerio for web scraping
 
 // Model definitions
-const { User, Article, Comment, Perspective } = require('./models/index');
+const { User, Article, Comment, Perspective, Vote } = require('./models/index');
 
 // Debugging
 console.log("Models defined: User, Article, Comment, Perspective");
@@ -159,6 +159,36 @@ app.get('/account/current', (req, res) => {
             console.error('Error:', error);
             res.json({ success: false, error: 'Server error' });
         });
+});
+
+async function retrieveVotesFromDatabase(userId) {
+    try {
+        const votes = await Vote.findAll({
+            where: { userId: userId },
+            attributes: ['comment_id', 'is_upvote'] // Select only the necessary fields
+        });
+        return votes.map(vote => ({
+            commentId: vote.comment_id,
+            isUpvote: vote.is_upvote
+        }));
+    } catch (error) {
+        console.error('Error retrieving votes:', error);
+        throw error; // Rethrow the error to handle it in the route
+    }
+}
+
+app.get('/votes/:userId', async (req, res) => {
+    try {
+        const userId = parseInt(req.session.userId, 10); // Ensure the userId is an integer
+        if (isNaN(userId)) {
+            return res.status(400).send({ error: 'Invalid user ID' });
+        }
+        const votes = await retrieveVotesFromDatabase(userId);
+        res.json(votes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error while retrieving votes' });
+    }
 });
 
 sequelize.authenticate()

@@ -4,6 +4,21 @@ const cheerio = require('cheerio');
 const { Article } = require('../models');
 const router = express.Router();
 
+router.get('/get_latest', async (req, res) => {
+    try {
+        const index = req.query.index || 0;
+        const article = await Article.findAll({
+            order: [['submitDate', 'DESC']],
+            offset: index,
+            limit: 1
+        });
+        res.json(article[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 router.post('/submit_article', async (req, res) => {
     try {
         const { url } = req.body;

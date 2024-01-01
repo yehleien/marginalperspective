@@ -1,38 +1,42 @@
 let articles = [];
 let currentArticleIndex = 0;
+import upvote from './upvote.js';
+import downvote from './downvote.js';
 
-async function fetchAndDisplayArticles() {
+async function fetchAndDisplayArticle() {
     try {
-        const response = await fetch('/articles/get_news');
-        articles = await response.json();
-        displayArticle();
-        fetchAndDisplayCommentsForFocusPage();
+        const response = await fetch(`/articles/get_latest?index=${currentArticleIndex}`);
+        const article = await response.json();
+        if (article) {
+            articles[currentArticleIndex] = article;
+            await displayArticle();
+            fetchAndDisplayCommentsForFocusPage();
+        } else {
+            console.error('No article returned from server');
+        }
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-function displayArticle() {
+async function displayArticle() {
     if (articles.length > 0) {
         const article = articles[currentArticleIndex];
         document.getElementById('articleTitle').textContent = article.title;
+        await fetchAndDisplayCommentsForFocusPage(); // Fetch comments after displaying the article
     }
 }
 
 document.getElementById('prevArticle').addEventListener('click', function() {
     if (currentArticleIndex > 0) {
         currentArticleIndex--;
-        displayArticle();
-        fetchAndDisplayCommentsForFocusPage();
+        fetchAndDisplayArticle();
     }
 });
 
 document.getElementById('nextArticle').addEventListener('click', function() {
-    if (currentArticleIndex < articles.length - 1) {
-        currentArticleIndex++;
-        displayArticle();
-        fetchAndDisplayCommentsForFocusPage();
-    }
+    currentArticleIndex++;
+    fetchAndDisplayArticle();
 });
 
 async function submitComment(commentText, perspectiveId) {
@@ -58,6 +62,10 @@ async function submitComment(commentText, perspectiveId) {
         const data = await response.json();
         console.log('Comment submitted:', data);
 
+            // Append the new comment to the comments container
+    const commentsContainer = document.getElementById('commentsContainer');
+    const commentElement = createCommentElement(data); // You'll need to implement this function
+    commentsContainer.appendChild(commentElement);
         // Clear the comment text field
         document.getElementById('commentText').value = '';
 
@@ -70,16 +78,19 @@ async function submitComment(commentText, perspectiveId) {
 
 async function fetchAndDisplayCommentsForFocusPage() {
     try {
+        const commentsContainer = document.getElementById('commentsContainer');
+        commentsContainer.innerHTML = ''; // Clear the comments container
+
         const response = await fetch(`/comments/comments/${articles[currentArticleIndex].id}`);
         const comments = await response.json();
-        const commentsContainer = document.querySelector('.comments-container');
-        commentsContainer.innerHTML = '';
 
-        comments.forEach(async comment => {
-            const updatedComment = await fetchComment(comment.id);
-            comment.upvotes = updatedComment.upvotes;
-            comment.downvotes = updatedComment.downvotes;
+        const userResponse = await fetch('/account/current', {
+            credentials: 'include'
+        });
+        const user = await userResponse.json();
+        const currentUserId = user.id;
 
+        comments.forEach(comment => {
             const commentElement = document.createElement('div');
             commentElement.className = 'comment-item';
 
@@ -87,62 +98,27 @@ async function fetchAndDisplayCommentsForFocusPage() {
             voteContainer.className = 'vote-container';
 
             const upvoteButton = document.createElement('button');
+            upvoteButton.className = 'vote-button';
             upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`;
-            upvoteButton.className = `vote-button ${comment.userHasUpvoted ? 'upvoted' : ''}`;
-            if (comment.userHasUpvoted) {
-                upvoteButton.style.backgroundColor = 'green';
-            }
-            upvoteButton.addEventListener('click', async () => {
-                if (!comment.userHasUpvoted) {
-                    try {
-                        const response = await fetch(`/comments/upvote/${comment.id}`, {
-                            method: 'POST',
-                            credentials: 'include'
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            upvoteButton.innerHTML = `&#x25B2; (${data.upvotes})`;
-                            upvoteButton.classList.add('upvoted');
-                            downvoteButton.classList.remove('downvoted');
-                            await comment.decrement('downvotes');
-                            await comment.increment('upvotes');
-                        } else {
-                            alert(data.error);
-                        }
-                    } catch (error) {
-                        console.error('Error upvoting comment:', error);
-                    }
-                }
-            });
+            upvoteButton.addEventListener('click', () => upvote(comment, upvoteButton, downvoteButton));
 
             const downvoteButton = document.createElement('button');
+            downvoteButton.className = 'vote-button';
             downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`;
-            downvoteButton.className = `vote-button ${comment.userHasDownvoted ? 'downvoted' : ''}`;
-            if (comment.userHasDownvoted) {
-                downvoteButton.style.backgroundColor = 'red';
-            }
-            downvoteButton.addEventListener('click', async () => {
-                if (!comment.userHasDownvoted) {
-                    try {
-                        const response = await fetch(`/comments/downvote/${comment.id}`, {
-                            method: 'POST',
-                            credentials: 'include'
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            downvoteButton.innerHTML = `&#x25BC; (${data.downvotes})`;
-                            downvoteButton.classList.add('downvoted');
-                            upvoteButton.classList.remove('upvoted');
-                            await comment.decrement('upvotes');
-                            await comment.increment('downvotes');
-                        } else {
-                            alert(data.error);
-                        }
-                    } catch (error) {
-                        console.error('Error downvoting comment:', error);
-                    }
+            downvoteButton.addEventListener('click', () => downvote(comment, upvoteButton, downvoteButton));
+
+            // Check if the current user has voted on the comment
+            const currentUserVote = comment.votes.find(vote => vote.userId === currentUserId); // currentUserId should be the ID of the logged-in user
+
+            if (currentUserVote) {
+                if (currentUserVote.is_upvote) {
+                    upvoteButton.classList.add('upvoted');
+                    downvoteButton.classList.remove('downvoted');
+                } else {
+                    downvoteButton.classList.add('downvoted');
+                    upvoteButton.classList.remove('upvoted');
                 }
-            });
+            }
 
             voteContainer.appendChild(upvoteButton);
             voteContainer.appendChild(downvoteButton);
@@ -170,14 +146,17 @@ async function fetchAndDisplayCommentsForFocusPage() {
 
 async function fetchComment(commentId) {
     try {
-        const response = await fetch(`/comments/${commentId}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(`/comments/comment/${commentId}`);
+                if (!response.ok) {
+            console.error(`HTTP error! status: ${response.status}`);
+            return null; // Return null if the server returns a non-OK status
         }
         const comment = await response.json();
+        console.log('Fetched comment:', comment);
         return comment;
     } catch (error) {
         console.error(`Error fetching comment with ID ${commentId}:`, error);
+        return null; // Return null if an error occurs
     }
 }
 
@@ -210,10 +189,10 @@ window.onload = async function() {
     document.getElementById('submitComment').addEventListener('click', async function(event) {
         event.preventDefault();
         const commentText = document.getElementById('commentText').value;
-        let perspectiveId = document.getElementById('perspectiveSelect').value || null; // Retrieve the perspectiveId directly within the function
-        await submitComment(commentText, perspectiveId); // Pass the perspectiveId to the submitComment function
+        const perspectiveId = document.getElementById('perspectiveSelect').value;
+        await submitComment(commentText, perspectiveId);
     });
-};
 
-// Fetch and display articles when the page loads
-fetchAndDisplayArticles();
+    // Fetch and display articles when the page loads
+    fetchAndDisplayArticle();
+}

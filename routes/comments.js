@@ -2,16 +2,43 @@ const express = require('express');
 const router = express.Router();
 const { Comment, User, Perspective, Article, Vote } = require('../models');
 
-// GET route to fetch comments for an article
 router.get('/comments/:articleId', async (req, res) => {
     try {
         const comments = await Comment.findAll({
             where: { articleId: req.params.articleId },
-            include: {
-                model: Perspective,
-                as: 'Perspective', // replace 'perspective' with the alias you used when defining the association
-                attributes: ['perspectiveName']
+            include: [
+                {
+                    model: Perspective,
+                    as: 'Perspective', 
+                    attributes: ['perspectiveName']
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: ['userId', 'is_upvote']
+                }
+            ]
+        });
+
+        // Fetch the current user's votes
+        const userVotes = await Vote.findAll({
+            where: { userId: req.session.userId } // replace with how you get the user's ID
+        });
+
+        comments.forEach(comment => {
+            comment.upvotes = comment.votes.filter(vote => vote.is_upvote).length;
+            comment.downvotes = comment.votes.filter(vote => !vote.is_upvote).length;
+
+            // Add information about the current user's vote
+            const userVote = userVotes.find(vote => vote.commentId === comment.id);
+            if (userVote) {
+                comment.userVote = userVote.is_upvote ? 'upvote' : 'downvote';
+            } else {
+                comment.userVote = null;
             }
+
+            // Remove the votes array to not send all votes to the client
+            delete comment.votes;
         });
 
         res.json(comments);
@@ -21,20 +48,30 @@ router.get('/comments/:articleId', async (req, res) => {
     }
 });
 
-// GET route to fetch a single comment by its ID
-router.get('/:commentId', async (req, res) => {
+router.get('/comment/:commentId', async (req, res) => {
     try {
-        const comment = await Comment.findByPk(req.params.commentId, {
-            include: {
-                model: Perspective,
-                as: 'Perspective',
-                attributes: ['perspectiveName']
-            }
+        const comment = await Comment.findOne({
+            where: { id: req.params.commentId },
+            include: [
+                {
+                    model: Perspective,
+                    as: 'Perspective', 
+                    attributes: ['perspectiveName']
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: ['userId', 'is_upvote']
+                }
+            ]
         });
 
         if (!comment) {
             return res.status(404).json({ message: 'Comment not found' });
         }
+
+        comment.upvotes = comment.votes.filter(vote => vote.is_upvote).length;
+        comment.downvotes = comment.votes.filter(vote => !vote.is_upvote).length;
 
         res.json(comment);
     } catch (error) {
@@ -60,6 +97,9 @@ router.post('/submit_comment', async (req, res) => {
             perspectiveId: perspectiveId || null // If perspectiveId is not provided, set it to null
         });
 
+        newComment.upvotes = 0;
+        newComment.downvotes = 0;
+
         res.status(201).json(newComment);
     } catch (error) {
         console.error(error);
@@ -78,28 +118,25 @@ router.post('/upvote/:commentId', async (req, res) => {
 
         if (existingVote) {
             if (existingVote.is_upvote) {
-                // User has already upvoted this comment, so we do nothing
-                return res.json({ success: false, error: 'You have already upvoted this comment' });
+                // User has already upvoted this comment, so we remove their upvote
+                await existingVote.destroy();
+                await comment.decrement('upvotes');
             } else {
                 // User has downvoted this comment, so we'll change their vote to an upvote
                 existingVote.is_upvote = true;
                 await existingVote.save();
-
-                // Decrement downvotes and increment upvotes
                 await comment.decrement('downvotes');
                 await comment.increment('upvotes');
             }
         } else {
             // User has not voted on this comment, so we'll create a new upvote
             await Vote.create({ userId, commentId, is_upvote: true });
-
-            // Increment upvotes
             await comment.increment('upvotes');
         }
 
-        await comment.save();
-
-        res.json({ success: true, upvotes: comment.upvotes });
+        // Reload the comment instance from the database to get the updated vote count
+        await comment.reload();
+        res.json({ success: true, upvotes: comment.upvotes, downvotes: comment.downvotes });
     } catch (error) {
         console.error('Error upvoting comment:', error);
         res.status(500).json({ message: 'Server error' });
@@ -117,28 +154,25 @@ router.post('/downvote/:commentId', async (req, res) => {
 
         if (existingVote) {
             if (!existingVote.is_upvote) {
-                // User has already downvoted this comment, so we do nothing
-                return res.json({ success: false, error: 'You have already downvoted this comment' });
+                // User has already downvoted this comment, so we remove their downvote
+                await existingVote.destroy();
+                await comment.decrement('downvotes');
             } else {
                 // User has upvoted this comment, so we'll change their vote to a downvote
                 existingVote.is_upvote = false;
                 await existingVote.save();
-
-                // Decrement upvotes and increment downvotes
                 await comment.decrement('upvotes');
                 await comment.increment('downvotes');
             }
         } else {
             // User has not voted on this comment, so we'll create a new downvote
             await Vote.create({ userId, commentId, is_upvote: false });
-
-            // Increment downvotes
             await comment.increment('downvotes');
         }
 
-        await comment.save();
-
-        res.json({ success: true, downvotes: comment.downvotes });
+        // Reload the comment instance from the database to get the updated vote count
+        await comment.reload();
+        res.json({ success: true, upvotes: comment.upvotes, downvotes: comment.downvotes });
     } catch (error) {
         console.error('Error downvoting comment:', error);
         res.status(500).json({ message: 'Server error' });

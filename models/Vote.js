@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
       });
   
       Vote.belongsTo(models.Comment, {
-        foreignKey: 'id',
-        onDelete: 'CASCADE'
+        foreignKey: 'commentId',
+        as: 'comment',
       });
     };
   

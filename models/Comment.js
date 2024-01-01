@@ -54,13 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'perspectiveId',
       as: 'Perspective',
     });
-    Comment.associate = function(models) {
-      Comment.belongsTo(models.Perspective, {
-          foreignKey: 'perspectiveId',
-          as: 'perspective'
-      });
+    Comment.hasMany(models.Vote, {
+      foreignKey: 'commentId',
+      as: 'votes'
+    });
   };
-  };
-
   return Comment;
 };

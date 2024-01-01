@@ -78,11 +78,13 @@
 }
 
 .vote-button.upvoted {
-    color: green;
+    background-color: green;
+    color: white; /* Change the text color to ensure it's visible on the green background */
 }
 
 .vote-button.downvoted {
-    color: red;
+    background-color: red;
+    color: white; /* Change the text color to ensure it's visible on the red background */
 }
 
 .perspective {

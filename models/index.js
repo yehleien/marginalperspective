@@ -19,7 +19,6 @@ if (config.use_env_variable) {
 fs
   .readdirSync(__dirname)
   .filter(file => {
-   // console.log(file); // Added this line
     return (
       file.indexOf('.') !== 0 &&
       file !== basename &&
@@ -28,14 +27,11 @@ fs
     );
   })
   .forEach(file => {
-    try {
-      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-      db[model.name] = model;
-    } catch (error) {
-      console.error(`Error initializing model from file ${file}:`, error);
-    }
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
   });
 
+// Call associate methods
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
