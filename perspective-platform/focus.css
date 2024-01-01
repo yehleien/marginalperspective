@@ -16,12 +16,12 @@
     flex: 8;
     text-align: center;
 }
+
 .main-content {
     display: flex;
 }
 
 .left-section {
-    flex: 1;
     display: flex;
     flex-direction: column;
 }
@@ -31,6 +31,8 @@
     border: 1px solid #ddd;
     margin: 10px;
     padding: 10px;
+    width: 40vw; /* Adjust this value as needed */
+    height: 40vw; /* Make it equal to the width */
 }
 
 .add-comment-container {
@@ -38,6 +40,19 @@
     border: 1px solid #ddd;
     margin: 10px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-toolbar {
+    display: flex;
+    justify-content: space-between; /* This will space out the select and button */
+    padding: 10px; /* Add some padding around the toolbar */
+}
+
+#commentText {
+    flex-grow: 1;
+    resize: none; /* This will prevent the user from resizing the textarea */
 }
 
 .comments-container {
@@ -46,6 +61,7 @@
     margin: 10px;
     padding: 10px;
 }
+
 .perspective {
     font-weight: bold;
     font-size: 1.5em;
@@ -65,9 +81,6 @@
 .perspective {
     font-weight: bold;
     font-size: 1.5em;
-}
-.comment-item {
-    display: flex;
 }
 
 .vote-container {
@@ -90,4 +103,8 @@
 .perspective {
     font-weight: bold;
     font-size: 1.5em;
+}
+
+#commentFormContainer {
+    flex-grow: 1;
 }
