@@ -2,8 +2,9 @@ let articles = [];
 let currentArticleIndex = 0;
 let currentlyViewedCommentId = null; // Add this line at the top of your script
 
-import upvote from './upvote.js';
-import downvote from './downvote.js';
+import upvote from './focus/upvote.js';
+import downvote from './focus/downvote.js';
+
 
 async function getCurrentUser() {
     const response = await fetch('/account/current', {
@@ -11,6 +12,39 @@ async function getCurrentUser() {
     });
     const user = await response.json();
     return user;
+}
+
+async function submitComment(commentText, perspectiveId) {
+    try {
+        const user = await getCurrentUser();
+        const userId = user.id;
+
+        const response = await fetch('/comments/submit_comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                articleId: articles[currentArticleIndex].id, 
+                commentText, 
+                perspectiveId, 
+                userId, 
+                parentID: selectedParentId // Include the selectedParentId
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Comment submitted:', data);
+
+        // Refresh the page
+        location.reload();
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+    }
 }
 
 async function fetchAndDisplayArticle() {
@@ -48,39 +82,6 @@ document.getElementById('nextArticle').addEventListener('click', function() {
     currentArticleIndex++;
     fetchAndDisplayArticle();
 });
-
-async function submitComment(commentText, perspectiveId) {
-    try {
-        const user = await getCurrentUser();
-        const userId = user.id;
-
-        const response = await fetch('/comments/submit_comment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                articleId: articles[currentArticleIndex].id, 
-                commentText, 
-                perspectiveId, 
-                userId, 
-                parentID: selectedParentId // Include the selectedParentId
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        console.log('Comment submitted:', data);
-
-        // Refresh the page
-        location.reload();
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-    }
-}
 
 let selectedParentId = null;
 
@@ -172,21 +173,21 @@ function createCommentElement(comment, currentUserId) {
     const commentElement = document.createElement('div');
     commentElement.className = 'comment-item';
 
-    const voteContainer = createVoteButtons(comment, currentUserId);
-    commentElement.appendChild(voteContainer);
+        // Create and append the vote buttons first
+        const voteContainer = createVoteButtons(comment, currentUserId);
+        commentElement.appendChild(voteContainer);
 
-    const perspectiveElement = document.createElement('p');
-    perspectiveElement.className = 'perspective';
-    perspectiveElement.textContent = comment.Perspective.perspectiveName;
+    // Check if the comment has a Perspective and perspectiveName before trying to access it
+    if (comment.Perspective && comment.Perspective.perspectiveName) {
+        const perspectiveElement = document.createElement('p');
+        perspectiveElement.className = 'perspective';
+        perspectiveElement.textContent = comment.Perspective.perspectiveName;
+        commentElement.appendChild(perspectiveElement);
+    }
 
     const textElement = document.createElement('p');
     textElement.textContent = comment.text;
-
-    const commentContent = document.createElement('div');
-    commentContent.appendChild(perspectiveElement);
-    commentContent.appendChild(textElement);
-
-    commentElement.appendChild(commentContent);
+    commentElement.appendChild(textElement);
 
     // Add a "view replies" link if the comment has replies
     if (comment.replyCount >= 0) {

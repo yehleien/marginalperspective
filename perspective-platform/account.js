@@ -1,4 +1,7 @@
 // perspective-platform/account.js
+
+const perspectiveTypes = ['Default', 'Custom', 'AnotherType', 'custom'];
+
 async function fetchAndDisplayUsername() {
     try {
         const response = await fetch('/account/current', {
@@ -30,9 +33,11 @@ async function fetchAndDisplayPerspectives() {
         perspectivesBody.innerHTML = perspectives.map(perspective => `
             <tr>
                 <td>${perspective.perspectiveName}</td>
+  
                 <td>${new Date(perspective.updatedAt).toLocaleString()}</td>
+                <td>${perspective.type}</td>
                 <td>
-                    <button onclick="showUpdateForm(${perspective.perspectiveId}, '${perspective.perspectiveName}')">Update</button>
+                    <button onclick="showUpdateForm(${perspective.perspectiveId}, '${perspective.perspectiveName}', '${perspective.type}')">Update</button>
                 </td>
             </tr>
         `).join('');
@@ -42,50 +47,36 @@ async function fetchAndDisplayPerspectives() {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('addPerspectiveForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    const updateForm = document.getElementById('updatePerspectiveForm');
+    if (updateForm) {
+        updateForm.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        const perspectiveName = document.getElementById('perspectiveName').value;
+            const perspectiveId = document.getElementById('updatePerspectiveId').value;
+            const name = document.getElementById('updatePerspectiveName').value;
+            const type = document.getElementById('updatePerspectiveType').value;
 
-        // Fetch the current user to get the userId
-        const userResponse = await fetch('/account/current', {
-            credentials: 'include' // include credentials to send the session cookie
+            if (!perspectiveId) {
+                console.error('Error: Perspective ID is undefined');
+                return;
+            }
+
+            updatePerspective(perspectiveId, name, type);
         });
-        const user = await userResponse.json();
-        const userId = user.id;
-
-        const response = await fetch('/perspectives/add_perspective', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ perspectiveName, userId }) // Include userId here
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Clear the input field
-            document.getElementById('perspectiveName').value = '';
-
-            // Refresh the perspectives list
-            fetchAndDisplayPerspectives();
-        } else {
-            // Display an error message
-            console.error('Error:', data.error);
-        }
-    });
+    } else {
+        console.error('Error: updatePerspectiveForm does not exist in the DOM.');
+    }
 });
 
-// Function to update a perspective
-async function updatePerspective(perspectiveId, perspectiveName) {
+// Function to update a perspective with type
+async function updatePerspective(perspectiveId, perspectiveName, perspectiveType) {
     try {
         const response = await fetch('/perspectives/update_perspective/' + perspectiveId, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ perspectiveName })
+            body: JSON.stringify({ perspectiveName, perspectiveType }) // Ensure both name and type are included in the body
         });
         const data = await response.json();
         if (data.success) {
@@ -105,12 +96,45 @@ window.onload = function() {
     fetchAndDisplayPerspectives();
 };
 
-// Show the update form with the current perspective name
-function showUpdateForm(perspectiveId, name) {
-    document.getElementById('updatePerspectiveId').value = perspectiveId;
-    document.getElementById('updatePerspectiveName').value = name;
-    document.getElementById('updatePerspectiveForm').style.display = 'block';
+// Show the update form with the current perspective name and type
+function showUpdateForm(perspectiveId, name, type) {
+    const updateIdElement = document.getElementById('updatePerspectiveId');
+    const updateNameElement = document.getElementById('updatePerspectiveName');
+    const typeDropdown = document.getElementById('updatePerspectiveType');
+
+    if (updateIdElement && updateNameElement && typeDropdown) {
+        updateIdElement.value = perspectiveId;
+        updateNameElement.value = name;
+        // Ensure the dropdown is set to the correct value
+        typeDropdown.value = type; // This should correctly set the dropdown to the current type
+
+        document.getElementById('updatePerspectiveForm').style.display = 'block';
+    } else {
+        console.error('One or more elements do not exist in the DOM.');
+    }
 }
+
+// Create perspective Dropdown menu
+function createDropdown(options, dropdownId) {
+    const select = document.createElement('select');
+    select.id = dropdownId;
+    select.name = dropdownId;
+  
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1); // Capitalize the first letter
+      select.appendChild(optionElement);
+    });
+  
+    return select;
+  }
+  
+  // Assuming 'perspectiveTypes' is an array of perspective types and 'perspectiveTypeDropdown' is the ID of the div where the dropdown should be appended
+  document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = createDropdown(perspectiveTypes, 'updatePerspectiveType');
+    document.getElementById('perspectiveTypeDropdown').appendChild(dropdown);
+  });
 
 // Handle the update form submission
 document.getElementById('updatePerspectiveForm').addEventListener('submit', function(event) {
@@ -118,13 +142,14 @@ document.getElementById('updatePerspectiveForm').addEventListener('submit', func
 
     const perspectiveId = document.getElementById('updatePerspectiveId').value;
     const name = document.getElementById('updatePerspectiveName').value;
+    const type = document.getElementById('updatePerspectiveType').value; // Get the selected type from the dropdown
 
     if (!perspectiveId) {
         console.error('Error: Perspective ID is undefined');
         return;
     }
 
-    updatePerspective(perspectiveId, name);
+    updatePerspective(perspectiveId, name, type); // Pass the type to the update function
 });
 document.getElementById('addPerspectiveButton').addEventListener('click', function() {
     const perspectivesTable = document.getElementById('perspectivesTable');

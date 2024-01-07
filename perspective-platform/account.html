@@ -25,6 +25,7 @@
             <tr>
                 <th>Perspective Name</th>
                 <th>Last Updated</th>
+                <th>Type</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -33,12 +34,14 @@
         </tbody>
     </table>
 
-    <!-- Update form -->
-    <form id="updatePerspectiveForm" style="display: none;">
-        <input type="hidden" id="updatePerspectiveId">
-        <input type="text" id="updatePerspectiveName" placeholder="New Perspective Name">
-        <button type="submit">Update Perspective</button>
-    </form>
+<!-- Update form -->
+<form id="updatePerspectiveForm" style="display: none;">
+    <input type="hidden" id="updatePerspectiveId">
+    <input type="text" id="updatePerspectiveName" placeholder="New Perspective Name">
+    <!-- Dropdown for perspective type, populated by account.js -->
+    <div id="perspectiveTypeDropdown"></div>
+    <button type="submit">Update Perspective</button>
+</form>
 
     <script src="account.js"></script>
 </body>

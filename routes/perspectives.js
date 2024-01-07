@@ -4,7 +4,9 @@ const { Perspective } = require('../models');
 
 router.get('/get_perspectives/:userId', (req, res) => {
     const userId = req.params.userId;
-    Perspective.findAll({ where: { userId } })
+    Perspective.findAll({ where: { userId }, 
+    attributes: ['perspectiveId', 'userId', 'perspectiveName', 'type', 'options', 'createdAt', 'updatedAt']
+    })
         .then(perspectives => {
             res.json(perspectives);
         })
@@ -28,10 +30,10 @@ router.post('/add_perspective', (req, res) => {
 });
 
 router.put('/update_perspective/:perspectiveId', (req, res) => {
-    const { perspectiveName } = req.body;
+    const { perspectiveName, perspectiveType } = req.body;
     const perspectiveId = req.params.perspectiveId;
 
-    Perspective.update({ perspectiveName }, { where: { perspectiveId } })
+    Perspective.update({ perspectiveName, type: perspectiveType }, { where: { perspectiveId } })
         .then(() => {
             res.json({ success: true });
         })

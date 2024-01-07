@@ -105,8 +105,9 @@ app.post('/account/signup', (req, res) => {
 
                     // After creating the user, create the default perspectives
                     const defaultPerspectives = [
-                        { userId: user.id, perspectiveName: 'Default 1', /* other fields */ },
-                        { userId: user.id, perspectiveName: 'Default 2', /* other fields */ },
+                        { userId: user.id, perspectiveName: 'Gender Identity', type: 'default', options: ['Male', 'Female', 'Non-Binary', 'Other'] },
+                        { userId: user.id, perspectiveName: 'Date of Birth', type: 'default', options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'] },
+                        { userId: user.id, perspectiveName: 'Marital Status', type: 'default', options: ['Single', 'Married', 'Divorced', 'Widowed']}
                         // Add more default perspectives as needed
                     ];
                     Perspective.bulkCreate(defaultPerspectives)
