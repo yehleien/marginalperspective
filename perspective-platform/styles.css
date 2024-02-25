@@ -101,4 +101,74 @@ nav {
     }
 }
 
-/* Additional styles specific to focus.css can be placed here */
+/* Additional comment styles */
+.comment p {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.comment .timestamp {
+    color: #333;
+    margin-top: 5px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100vh; /* Adjust as needed */
+}
+
+.articles-column {
+    grid-column: 1;
+    grid-row: 1;
+    overflow-y: auto; /* Makes the articles list scrollable */
+}
+
+.article-display-column {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.comments-column {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.comment-form-column {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-form-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#commentText {
+    flex-grow: 1;
+    resize: none; /* Prevents the textarea from being manually resized */
+    height: 50vh; /* Sets the height of the textarea to 50% of the viewport height */
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* Add to the end of the file */
+.comment-input-box {
+    margin: 0 auto; /* Center align the comment input box */
+    width: 80%; /* Adjust width as needed */
+}
+
+.article-title, .vote-arrows {
+    text-align: center; /* Center align article title and vote arrows */
+}

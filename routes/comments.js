@@ -83,7 +83,7 @@ router.get('/comment/:commentId', async (req, res) => {
 
 // POST route to create a new comment
 router.post('/submit_comment', async (req, res) => {
-    const { articleId, commentText, userId, perspectiveId, parentID } = req.body; // Include parentID in the destructuring
+    const { articleId, commentText, userId, perspectiveId, parentID } = req.body;
 
     try {
         // Validate input data
@@ -96,20 +96,9 @@ router.post('/submit_comment', async (req, res) => {
             text: commentText,
             articleId: articleId,
             userId: userId,
-            perspectiveId: perspectiveId || null,
-            parentID: parentID || null // Include parentID when creating a comment, defaulting to null if not provided
+            perspectiveId: perspectiveId || null, // If perspectiveId is not provided, set it to null
+            parentID: parentID || null // Handle parentID, setting it to null if not provided
         });
-
-        // If there's a parentID, find the parent comment and increment its replyCount
-        if (parentID) {
-            await Comment.increment('replyCount', { where: { id: parentID } });
-
-            // Fetch the updated parent comment to log its new replyCount
-            const updatedParentComment = await Comment.findByPk(parentID, {
-                attributes: ['id', 'replyCount']
-            });
-            console.log(`Updated replyCount for comment ID ${parentID}:`, updatedParentComment.replyCount);
-        }
 
         newComment.upvotes = 0;
         newComment.downvotes = 0;

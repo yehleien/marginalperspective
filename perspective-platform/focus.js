@@ -14,6 +14,7 @@ async function getCurrentUser() {
 }
 
 async function submitComment(commentText, perspectiveId) {
+    const parentID = document.getElementById('parentIDInput').value;
     try {
         const user = await getCurrentUser();
         const userId = user.id;
@@ -28,7 +29,7 @@ async function submitComment(commentText, perspectiveId) {
                 commentText, 
                 perspectiveId, 
                 userId, 
-                parentID: selectedCommentId
+                parentID
             }),
         });
 
@@ -39,8 +40,13 @@ async function submitComment(commentText, perspectiveId) {
         const data = await response.json();
         console.log('Comment submitted:', data);
 
-        selectedCommentId = null;
+        // Instead of reloading the page, fetch and display the updated comments
         await fetchAndDisplayCommentsForFocusPage();
+
+        // Optionally, clear the comment input field after submission
+        document.getElementById('commentText').value = '';
+        document.getElementById('parentIDInput').value = ''; // Reset the parentIDInput value if necessary
+
     } catch (error) {
         console.error('Error submitting comment:', error);
     }
@@ -62,7 +68,27 @@ async function fetchAndDisplayArticle() {
     }
 }
 
-function createVoteButtons(comment) {
+async function displayArticle() {
+    if (articles.length > 0) {
+        const article = articles[currentArticleIndex];
+        document.getElementById('articleTitle').textContent = article.title;
+        await fetchAndDisplayCommentsForFocusPage(); // Fetch comments after displaying the article
+    }
+}
+
+document.getElementById('prevArticle').addEventListener('click', function() {
+    if (currentArticleIndex > 0) {
+        currentArticleIndex--;
+        fetchAndDisplayArticle();
+    }
+});
+
+document.getElementById('nextArticle').addEventListener('click', function() {
+    currentArticleIndex++;
+    fetchAndDisplayArticle();
+});
+
+function createVoteButtons(comment, currentUserId) {
     const voteContainer = document.createElement('div');
     voteContainer.className = 'vote-container';
 
@@ -80,11 +106,74 @@ function createVoteButtons(comment) {
     return voteContainer;
 }
 
+function createRepliesButton(comment, parentCommentElement, currentUserId) {
+    const repliesButton = document.createElement('button');
+    repliesButton.textContent = `Replies (${comment.replyCount})`;
+    repliesButton.className = 'replies-button';
+
+    repliesButton.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        const repliesContainer = parentCommentElement.querySelector('.replies-container');
+        if (repliesContainer.style.display === 'none' || repliesContainer.style.display === '') {
+            repliesContainer.style.display = 'block';
+            repliesButton.textContent = `Hide replies (${comment.replyCount})`;
+
+            if (repliesContainer.childElementCount === 0) {
+                // Fetch and display replies only if they haven't been fetched yet
+                const response = await fetch(`/comments/replies/${comment.id}`);
+                const replies = await response.json();
+
+                replies.forEach(reply => {
+                    const replyElement = createCommentElement(reply, currentUserId);
+                    repliesContainer.appendChild(replyElement);
+                });
+            }
+        } else {
+            repliesContainer.style.display = 'none';
+            repliesButton.textContent = `Replies (${comment.replyCount})`;
+        }
+    });
+
+    const repliesContainer = document.createElement('div');
+    repliesContainer.className = 'replies-container';
+    repliesContainer.style.display = 'none'; // Hide the replies container initially
+
+    parentCommentElement.appendChild(repliesButton);
+    parentCommentElement.appendChild(repliesContainer);
+}
+
+function createReplyButton(comment) {
+    const replyButton = document.createElement('button');
+    replyButton.textContent = 'Reply';
+    replyButton.addEventListener('click', function() {
+        const parentIDInput = document.getElementById('parentIDInput');
+        if (parentIDInput) {
+            parentIDInput.value = comment.id; // Correctly update the hidden input's value
+        } else {
+            console.error('parentIDInput element not found');
+        }
+
+        // Highlight the comment being replied to
+        document.querySelectorAll('.comment-item').forEach(item => item.style.backgroundColor = '');
+        const commentElement = document.getElementById(`comment-${comment.id}`);
+        if (commentElement) {
+            commentElement.style.backgroundColor = '#ffff99'; // Highlight color
+        } else {
+            console.error(`Comment element with ID comment-${comment.id} not found`);
+        }
+    });
+
+    return replyButton;
+}
+
 function createCommentElement(comment, currentUserId) {
     const commentElement = document.createElement('div');
     commentElement.className = 'comment-item';
+    commentElement.id = `comment-${comment.id}`; // Assign an ID to each comment element for highlighting
 
-    const voteContainer = createVoteButtons(comment);
+    // Create and append the vote buttons first
+    const voteContainer = createVoteButtons(comment, currentUserId);
     commentElement.appendChild(voteContainer);
 
     if (comment.Perspective && comment.Perspective.perspectiveName) {
@@ -98,6 +187,10 @@ function createCommentElement(comment, currentUserId) {
     textElement.textContent = comment.text;
     commentElement.appendChild(textElement);
 
+    // Always add a replies button, showing 0 if there are no replies
+    createRepliesButton(comment, commentElement, currentUserId);
+
+    // Replace the checkbox with a reply button
     const replyButton = createReplyButton(comment);
     commentElement.appendChild(replyButton);
 
