@@ -1,29 +1,32 @@
 .comments-column {
-    border: 1px solid grey;
-    padding: 10px;
-    margin-bottom: 1px;
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #ffffff;
 }
 
 .comment-item {
     position: relative;
-    border: 1px solid #000;
-    padding: 10px;
-    margin-bottom: 10px;
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
 }
 
 .comment-header {
-    background-color: lightgray;
-    padding: 5px;
+    background-color: #dae0e6;
+    padding: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid #d7dadc;
 }
 
 .vote-button {
     background: none;
     border: none;
     cursor: pointer;
-    color: black;
+    color: #1c1c1c;
 }
 
 .vote-button.voted {
@@ -31,18 +34,19 @@
 }
 
 .vote-button.upvoted {
-    color: green;
+    color: #ff4500;
 }
 
 .vote-button.downvoted {
-    color: red;
+    color: #7193ff;
 }
 
 .perspective {
     display: inline-block;
-    background-color: lightgrey;
-    border-radius: 50%; /* This makes the element oval-shaped */
-    padding: 5px 10px; /* This adds some space around the text */
+    background-color: #dae0e6;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-top: 10px;
 }
 
 .votes-display {

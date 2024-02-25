@@ -82,7 +82,7 @@ router.get('/comment/:commentId', async (req, res) => {
 
 // POST route to create a new comment
 router.post('/submit_comment', async (req, res) => {
-    const { articleId, commentText, userId, perspectiveId } = req.body;
+    const { articleId, commentText, userId, perspectiveId, parentID } = req.body;
 
     try {
         // Validate input data
@@ -94,7 +94,8 @@ router.post('/submit_comment', async (req, res) => {
             text: commentText,
             articleId: articleId,
             userId: userId,
-            perspectiveId: perspectiveId || null // If perspectiveId is not provided, set it to null
+            perspectiveId: perspectiveId || null, // If perspectiveId is not provided, set it to null
+            parentID: parentID || null // Handle parentID, setting it to null if not provided
         });
 
         newComment.upvotes = 0;

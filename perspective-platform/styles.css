@@ -336,3 +336,13 @@ input[type="checkbox"] {
     height: 20px;
     margin-right: 10px;
 }
+
+/* Add to the end of the file */
+.comment-input-box {
+    margin: 0 auto; /* Center align the comment input box */
+    width: 80%; /* Adjust width as needed */
+}
+
+.article-title, .vote-arrows {
+    text-align: center; /* Center align article title and vote arrows */
+}

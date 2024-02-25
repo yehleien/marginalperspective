@@ -1,116 +1,188 @@
+.comments-column {
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #ffffff;
+}
+
+.comment-item {
+    position: relative;
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+}
+
+.comment-header {
+    background-color: #dae0e6;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #d7dadc;
+}
+
+.vote-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1c1c1c;
+}
+
+.vote-button.voted {
+    font-weight: bold;
+}
+
+.vote-button.upvoted {
+    color: #ff4500;
+}
+
+.vote-button.downvoted {
+    color: #7193ff;
+}
+
+.perspective {
+    display: inline-block;
+    background-color: #dae0e6;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+
+.votes-display {
+    margin-right: 10px;
+}
+
 .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 50px; /* Adjust to match your header height */
-    background-color: #f8f8f8; /* Adjust to match your design */
-    padding: 0 10px;
+    padding: 16px 0;
 }
 
 .toolbar-button {
-    flex: 1;
-    max-width: 10%;
+    flex: 0 0 50px; /* Do not grow or shrink, set basis to 50px */
+    width: 50px;
+    height: 50px; /* Adjust height to match the article title */
 }
 
 .toolbar-title {
-    flex: 8;
+    flex-grow: 1;
     text-align: center;
+    margin: 0 50px; /* Add margin to ensure buttons do not overlap the title */
 }
 
-.main-content {
-    display: flex;
+#articleTitle {
+    line-height: 50px; /* Match the height of the buttons */
 }
 
-.left-section {
-    display: flex;
-    flex-direction: column;
-}
-
-.filter-container {
-    flex: 1;
+#randomArticleButton {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 16px;
+    background-color: #f8f9fa;
     border: 1px solid #ddd;
-    margin: 10px;
-    padding: 10px;
-    width: 40vw; /* Adjust this value as needed */
-    height: 40vw; /* Make it equal to the width */
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.add-comment-container {
-    flex: 1;
+.comment-form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 8px;
+    align-items: start;
+}
+
+#perspectiveSelect {
+    grid-column: 1;
+    width: auto; /* Adjust width as needed */
+    padding: 10px;
     border: 1px solid #ddd;
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.comment-toolbar {
-    display: flex;
-    justify-content: space-between; /* This will space out the select and button */
-    padding: 10px; /* Add some padding around the toolbar */
-}
-
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+    border-radius: 4px;
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 #commentText {
-    flex-grow: 1;
-    resize: none; /* This will prevent the user from resizing the textarea */
-}
-
-.comments-container {
-    flex: 2;
+    grid-column: 1 / span 2; /* Span across both columns */
+    width: 100%;
+    height: 100px;
+    padding: 8px;
+    margin-top: 8px; /* Space between the dropdown and the comment box */
     border: 1px solid #ddd;
-    margin: 10px;
-    padding: 10px;
+    border-radius: 4px;
+    resize: vertical;
 }
 
-.perspective {
-    font-weight: bold;
-    font-size: 1.5em;
+#submitComment {
+    grid-column: 1;
+    width: auto; /* Match the width of the perspectiveSelect dropdown */
+    padding: 10px 0;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
-
-.comment-item {
+.article-filter-toolbar,
+.comment-filter-toolbar {
     display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    margin-bottom: 16px; /* Space between the toolbar and the next section */
+    border-bottom: 1px solid #ddd; /* Optional separator */
 }
 
-.vote-container {
+.article-filter-toolbar button,
+.comment-filter-toolbar button {
+    flex: 1; /* Each button will grow equally to fill the toolbar */
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 4px; /* Maintain a small margin between buttons */
+}
+
+/* Remove margin for the first and last buttons to align with the toolbar edges */
+.article-filter-toolbar button:first-child,
+.comment-filter-toolbar button:first-child {
+    margin-left: 0;
+}
+
+.article-filter-toolbar button:last-child,
+.comment-filter-toolbar button:last-child {
+    margin-right: 0;
+}
+.article-context-toolbar {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
-    margin-right: 10px;
+    padding: 10px 0;
+    margin-bottom: 16px; /* Space between the context toolbar and the next section */
+    background-color: #e9ecef; /* Different background to distinguish from filter toolbar */
+    border-radius: 4px; /* Optional rounded corners */
 }
 
-.perspective {
-    font-weight: bold;
-    font-size: 1.5em;
+.article-context-toolbar > * {
+    margin: 0 8px; /* Spacing between context items */
+    padding: 4px 8px; /* Padding for better readability */
 }
 
-.vote-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 10px;
+.article-context-toolbar button {
+    padding: 8px 16px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.vote-button.upvoted {
-    background-color: green;
-    color: white; /* Change the text color to ensure it's visible on the green background */
-}
-
-.vote-button.downvoted {
-    background-color: red;
-    color: white; /* Change the text color to ensure it's visible on the red background */
-}
-
-.perspective {
-    font-weight: bold;
-    font-size: 1.5em;
-}
-
-#commentFormContainer {
-    flex-grow: 1;
+.article-context-toolbar span {
+    background-color: #f2f2f2; /* Light background for the span elements */
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
