@@ -62,53 +62,87 @@ input[type="checkbox"] {
 }
 
 .comments-container {
-    flex: 2;
-    border: 1px solid #ddd;
-    margin: 10px;
-    padding: 10px;
-}
-
-.perspective {
-    font-weight: bold;
-    font-size: 1.5em;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px; /* Adjust spacing between comments */
 }
 
 .comment-item {
     display: flex;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
 }
 
 .vote-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 10px;
+    /* Orange container */
+    flex-basis: 10%;
+    background-color: orange;
+    /* Add additional styling */
 }
 
-.perspective {
+.content-container {
+    /* Main content container */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.perspective-container {
+    /* Blue container */
+    background-color: blue;
+    /* Add additional styling */
+}
+
+.comment-text-container {
+    /* Green container */
+    flex-grow: 1;
+    background-color: green;
+    /* Add additional styling */
+}
+
+.interaction-container {
+    /* Container for interaction buttons */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.view-replies-container {
+    /* Purple container */
+    background-color: purple;
+    /* Add additional styling */
+}
+
+.reply-button-container {
+    /* Red container */
+    background-color: red;
+    /* Add additional styling */
+}
+
+.comment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px; /* Space between text and footer */
+}
+
+.vote-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+}
+
+.vote-button.voted {
     font-weight: bold;
-    font-size: 1.5em;
-}
-
-.vote-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 10px;
 }
 
 .vote-button.upvoted {
-    background-color: green;
-    color: white; /* Change the text color to ensure it's visible on the green background */
+    color: green;
 }
 
 .vote-button.downvoted {
-    background-color: red;
-    color: white; /* Change the text color to ensure it's visible on the red background */
-}
-
-.perspective {
-    font-weight: bold;
-    font-size: 1.5em;
+    color: red;
 }
 
 #commentFormContainer {

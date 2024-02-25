@@ -6,6 +6,7 @@ router.get('/comments/:articleId', async (req, res) => {
     try {
         const comments = await Comment.findAll({
             where: { articleId: req.params.articleId },
+            attributes: ['id', 'text', 'userId', 'articleId', 'perspectiveId', 'upvotes', 'downvotes', 'parentID', 'replyCount', 'createdAt', 'updatedAt'], // Include 'replyCount' here
             include: [
                 {
                     model: Perspective,
@@ -82,7 +83,7 @@ router.get('/comment/:commentId', async (req, res) => {
 
 // POST route to create a new comment
 router.post('/submit_comment', async (req, res) => {
-    const { articleId, commentText, userId, perspectiveId } = req.body;
+    const { articleId, commentText, userId, perspectiveId, parentID } = req.body; // Include parentID in the destructuring
 
     try {
         // Validate input data
@@ -90,12 +91,25 @@ router.post('/submit_comment', async (req, res) => {
             return res.status(400).send('Missing required fields');
         }
 
+        // Create the comment with parentID (if provided)
         const newComment = await Comment.create({
             text: commentText,
             articleId: articleId,
             userId: userId,
-            perspectiveId: perspectiveId || null // If perspectiveId is not provided, set it to null
+            perspectiveId: perspectiveId || null,
+            parentID: parentID || null // Include parentID when creating a comment, defaulting to null if not provided
         });
+
+        // If there's a parentID, find the parent comment and increment its replyCount
+        if (parentID) {
+            await Comment.increment('replyCount', { where: { id: parentID } });
+
+            // Fetch the updated parent comment to log its new replyCount
+            const updatedParentComment = await Comment.findByPk(parentID, {
+                attributes: ['id', 'replyCount']
+            });
+            console.log(`Updated replyCount for comment ID ${parentID}:`, updatedParentComment.replyCount);
+        }
 
         newComment.upvotes = 0;
         newComment.downvotes = 0;

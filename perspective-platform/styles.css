@@ -4,24 +4,14 @@
     padding: 0;
     box-sizing: border-box;
 }
-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  table, th, td {
-    border: 1px solid black;
-  }
-  
-  th, td {
-    padding: 15px;
-    text-align: left;
-  }
+
 html, body {
     height: 100%;
     font-family: 'Arial', sans-serif;
     background-color: #f0f0f0;
 }
+
+/* Header Styles */
 header {
     background-color: #333;
     color: white;
@@ -30,57 +20,6 @@ header {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-}
-#articlesBody tr.selected {
-    background-color: #34b1db; /* Light blue */
-}
-h1 {
-    margin-bottom: 1rem;
-}
-.container {
-    display: flex;
-    flex-direction: row;
-}
-
-.articles-column {
-    flex: 1;
-    order: 1;
-}
-
-.article-display-column {
-    flex: 2;
-    order: 2;
-    display: flex;
-    flex-direction: column;
-}
-
-#articleFrame {
-    flex: 1;
-}
-
-.comment-form-column {
-    flex: 1;
-    order: 2; /* This will place the comment form on the left */
-}
-
-.comments-column {
-    order: 1; /* This will place the comments on the right */
-}
-
-nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-}
-/* Header Styles */
-header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
 }
 
 nav {
@@ -96,42 +35,7 @@ nav {
     margin: 0 1rem;
 }
 
-.center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.sort-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.sort-button {
-    padding: 10px 20px;
-    font-size: 1.2em;
-}
-
-.articles-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.articles-table th, .articles-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.articles-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.center-text {
-    text-align: center;
-}
-
-/* Main container with flexbox for 3 columns */
+/* Main container with flexbox for layout */
 .container {
     display: flex;
     flex-wrap: wrap;
@@ -143,122 +47,44 @@ nav {
 .articles-column,
 .comments-column,
 .comment-form-column {
-    flex-basis: calc(33.333% - 20px); /* Subtracting the gap from the flex-basis */
     border: 1px solid #ddd;
     background-color: #fff;
     padding: 10px;
     overflow-y: auto; /* Scrollable columns */
-    height: 800px; /* Fixed height, or you can make it responsive with vh */
 }
 
-/* Comment form styles */
-#commentForm,
-#submitArticleForm {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#commentInput, 
-#perspectiveSelect {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-#commentForm button,
-#ArticleForm button {
-    padding: 10px;
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-#commentForm button:hover {
-    background-color: #003d82;
-}
-
-/* Pagination styles */
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.pagination button {
-    padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.pagination button.active,
-.pagination button:hover {
-    background-color: #0056b3;
-    color: white;
-}
-
-/* Article and comment styles */
-.article-item,
+/* Comment styles */
 .comment-item {
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 20px; /* Adjust spacing between comments */
 }
 
-.article-item:last-child,
-.comment-item:last-child {
-    border-bottom: none;
-}
-
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-}
-
-tr:hover {
-    background-color: #f2f2f2;
-}
-
-th {
-    background-color: #333;
-    color: white;
-}
-
-tr.selected {
-    background-color: #ddd; /* Style for the selected article */
-}
-
-/* Pagination styles */
-.pagination {
+.comment-header {
     display: flex;
-    justify-content: center;
-    gap: 5px;
-    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Space between header and text */
 }
 
-.pagination button {
-    padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    cursor: pointer;
+.perspective {
+    font-weight: bold;
+    font-size: 1.5em; /* Adjust size as needed */
 }
 
-.pagination button.active,
-.pagination button:hover {
-    background-color: #0056b3;
-    color: white;
+.comment-text {
+    margin-top: 10px; /* Adjust spacing between the perspective and the comment text */
+}
+
+.view-replies {
+    margin-left: auto; /* Pushes the button to the right */
+}
+
+.comment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px; /* Space between text and footer */
 }
 
 /* Responsive design adjustments */
@@ -275,64 +101,4 @@ tr.selected {
     }
 }
 
-/* Additional comment styles */
-.comment p {
-    font-size: 0.8em;
-    color: #666;
-}
-
-.comment .timestamp {
-    color: #333;
-    margin-top: 5px;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    height: 100vh; /* Adjust as needed */
-}
-
-.articles-column {
-    grid-column: 1;
-    grid-row: 1;
-    overflow-y: auto; /* Makes the articles list scrollable */
-}
-
-.article-display-column {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.comments-column {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.comment-form-column {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.comment-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.comment-form-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-#commentText {
-    flex-grow: 1;
-    resize: none; /* Prevents the textarea from being manually resized */
-    height: 50vh; /* Sets the height of the textarea to 50% of the viewport height */
-}
-
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
+/* Additional styles specific to focus.css can be placed here */
