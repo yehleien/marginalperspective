@@ -38,14 +38,25 @@ router.post('/submit_article', async (req, res) => {
 });
 
 router.get('/get_news', async (req, res) => {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = (page - 1) * limit;
+
     try {
-        const articles = await Article.findAll({
-            order: [['submitDate', 'DESC']]
+        const { count, rows } = await Article.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            order: [['submitDate', 'DESC']] // Assuming you have a 'submitDate' field to sort by
         });
-        res.json(articles);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+
+        res.json({
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            articles: rows
+        });
+    } catch (error) {
+        console.error('Error fetching articles:', error);
+        res.status(500).json({ message: 'Error fetching articles' });
     }
 });
 

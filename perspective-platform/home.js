@@ -25,8 +25,10 @@ document.getElementById('scrapeArticles').addEventListener('click', async functi
 
 async function fetchAndDisplayArticles() {
     try {
-        const response = await fetch('/articles/get_news');
-        const articles = await response.json();
+        const response = await fetch(`/articles/get_news?page=${currentPage}&limit=10`);
+        const data = await response.json();
+        const { totalPages, articles } = data;
+        currentPage = data.currentPage; // Correctly update the currentPage variable with the value from the response
         const articlesBody = document.getElementById('articlesBody');
         articlesBody.innerHTML = ''; // Clear the table body
 
@@ -46,8 +48,8 @@ async function fetchAndDisplayArticles() {
 
             const actionButton = document.createElement('button');
             actionButton.textContent = 'View Article';
-            actionButton.addEventListener('click', async () => {
-                // Placeholder for action
+            actionButton.addEventListener('click', () => {
+                window.open(article.url, '_blank'); // Open article URL in a new tab
             });
             actionCell.appendChild(actionButton);
 
@@ -62,7 +64,6 @@ async function fetchAndDisplayArticles() {
             // Calculate total votes
             let totalVotes = 0;
             comments.forEach(comment => {
-                // Assuming each comment has a 'votes' array
                 totalVotes += comment.votes.length;
             });
             totalVotesCell.textContent = totalVotes;
@@ -91,13 +92,17 @@ async function fetchAndDisplayArticles() {
             mostCommonPerspectiveCell.textContent = mostCommonPerspective || 'None';
 
             const viewInFocusButton = document.createElement('button');
-            viewInFocusButton.textContent = 'View in Focus'; // Placeholder for future implementation
-            viewInFocusCell.appendChild(viewInFocusButton); // Placeholder for future implementation
+            viewInFocusButton.textContent = 'View in Focus';
+            viewInFocusButton.addEventListener('click', () => {
+                // Assuming the focus page URL is "/focus" and the article ID is passed as a query parameter
+                window.location.href = `/focus?articleId=${article.id}`; // Redirect to the focus page for the article
+            });
+            viewInFocusCell.appendChild(viewInFocusButton);
 
             row.appendChild(titleCell);
             row.appendChild(dateCell);
             row.appendChild(actionCell);
-            row.appendChild(sourceCell);
+            row.appendChild(sourceCell); 
             row.appendChild(commentsCountCell);
             row.appendChild(mostCommonPerspectiveCell);
             row.appendChild(totalVotesCell);
@@ -105,8 +110,24 @@ async function fetchAndDisplayArticles() {
 
             articlesBody.appendChild(row);
         }
+
+        // Update pagination buttons visibility
+        document.getElementById('prevPageButton').style.visibility = currentPage > 1 ? 'visible' : 'hidden';
+        document.getElementById('nextPageButton').style.visibility = currentPage < totalPages ? 'visible' : 'hidden';
     } catch (err) {
         console.error(err);
+    }
+}
+
+function nextPage() {
+    currentPage++;
+    fetchAndDisplayArticles();
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        fetchAndDisplayArticles();
     }
 }
 
@@ -118,3 +139,6 @@ document.getElementById('articleForm').addEventListener('submit', async (event) 
     urlInput.value = ''; // Clear the input field
     await fetchAndDisplayArticles(); // Refresh the articles list
 });
+
+document.getElementById('nextPageButton').addEventListener('click', nextPage);
+document.getElementById('prevPageButton').addEventListener('click', previousPage);

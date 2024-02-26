@@ -5,8 +5,9 @@
     box-sizing: border-box;
 }
 table {
-    width: 100%;
+    width: calc(100% - 40px); /* Adjusted width to account for padding */
     border-collapse: collapse;
+    margin: 20px; /* Added padding around the table */
   }
   
   table, th, td {
@@ -114,7 +115,7 @@ nav {
 }
 
 .articles-table {
-    width: 100%;
+    width: calc(100% - 40px); /* Adjusted width to account for padding */
     border-collapse: collapse;
 }
 
