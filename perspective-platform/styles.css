@@ -13,26 +13,38 @@ html, body {
 
 /* Header Styles */
 header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
+    background-color: #add8e6; /* Light blue background */
+    color: black; /* Change text color to black */
+    padding: 0.5rem 1rem; /* Adjust padding */
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Align items to the sides */
     align-items: center;
-    flex-direction: column;
 }
 
 nav {
-    width: 100%;
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    gap: 20px; /* Add space between navigation links */
 }
 
 .header-link {
-    color: white;
+    color: black; /* Change link color to black */
     text-decoration: none;
-    margin: 0 1rem;
+    font-weight: bold; /* Make the font bold */
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between logo icon and text */
+}
+.logo-icon {
+    width: 30px; /* Logo icon width */
+    height: 30px; /* Logo icon height */
+    background-color: white; /* Background color of the logo icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold; /* Make the MP text bold */
+    border: 1px solid black; /* Border around the logo icon */
 }
 
 /* Main container with flexbox for layout */
