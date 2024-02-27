@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.NOW // Set default value to current date/time
     },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'webpage'
+    }
   }, {
     timestamps: false, // Disable automatic timestamp fields (createdAt, updatedAt)
   });

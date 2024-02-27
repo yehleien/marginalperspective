@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     replyCount: {
       type:DataTypes.INTEGER,
-      default: 0
+      defaultValue: 0
     }
   }, {
     timestamps: true

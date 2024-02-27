@@ -13,8 +13,11 @@ async function getCurrentUser() {
     return user;
 }
 
-async function submitComment(commentText, perspectiveId) {
+async function submitComment(commentText) {
     const parentID = document.getElementById('parentIDInput').value;
+    const perspectiveSelect = document.getElementById('perspectiveSelect'); // Get the select element
+    const perspectiveId = perspectiveSelect.value; // Get the selected perspectiveId
+
     try {
         const user = await getCurrentUser();
         const userId = user.id;
@@ -27,7 +30,7 @@ async function submitComment(commentText, perspectiveId) {
             body: JSON.stringify({ 
                 articleId: articles[currentArticleIndex].id, 
                 commentText, 
-                perspectiveId, 
+                perspectiveId, // Include the selected perspectiveId in the request
                 userId, 
                 parentID
             }),
@@ -43,9 +46,10 @@ async function submitComment(commentText, perspectiveId) {
         // Instead of reloading the page, fetch and display the updated comments
         await fetchAndDisplayCommentsForFocusPage();
 
-        // Optionally, clear the comment input field after submission
+        // Optionally, clear the comment input field and reset the perspectiveSelect after submission
         document.getElementById('commentText').value = '';
         document.getElementById('parentIDInput').value = ''; // Reset the parentIDInput value if necessary
+        perspectiveSelect.value = ''; // Optionally reset the perspectiveSelect if needed
 
     } catch (error) {
         console.error('Error submitting comment:', error);
@@ -93,12 +97,22 @@ function createVoteButtons(comment, currentUserId) {
     voteContainer.className = 'vote-container';
 
     const upvoteButton = document.createElement('button');
-    upvoteButton.innerHTML = `Upvote (${comment.upvotes})`;
-    upvoteButton.addEventListener('click', () => upvote(comment, upvoteButton, downvoteButton));
+    upvoteButton.innerHTML = `&#x25B2; (${comment.upvotes})`; // Up arrow symbol
+    upvoteButton.className = comment.userHasUpvoted ? 'upvoted' : ''; // Add 'upvoted' class if user has upvoted
+    upvoteButton.addEventListener('click', async () => {
+        await upvote(comment, upvoteButton, downvoteButton);
+        upvoteButton.classList.add('upvoted');
+        downvoteButton.classList.remove('downvoted'); // Remove 'downvoted' class from downvote button
+    });
 
     const downvoteButton = document.createElement('button');
-    downvoteButton.innerHTML = `Downvote (${comment.downvotes})`;
-    downvoteButton.addEventListener('click', () => downvote(comment, upvoteButton, downvoteButton));
+    downvoteButton.innerHTML = `&#x25BC; (${comment.downvotes})`; // Down arrow symbol
+    downvoteButton.className = comment.userHasDownvoted ? 'downvoted' : ''; // Add 'downvoted' class if user has downvoted
+    downvoteButton.addEventListener('click', async () => {
+        await downvote(comment, upvoteButton, downvoteButton);
+        downvoteButton.classList.add('downvoted');
+        upvoteButton.classList.remove('upvoted'); // Remove 'upvoted' class from upvote button
+    });
 
     voteContainer.appendChild(upvoteButton);
     voteContainer.appendChild(downvoteButton);
@@ -190,21 +204,11 @@ function createCommentElement(comment, currentUserId) {
     // Always add a replies button, showing 0 if there are no replies
     createRepliesButton(comment, commentElement, currentUserId);
 
-    // Replace the checkbox with a reply button
+    // Add a reply button
     const replyButton = createReplyButton(comment);
     commentElement.appendChild(replyButton);
 
     return commentElement;
-}
-
-function createReplyButton(comment) {
-    const replyButton = document.createElement('button');
-    replyButton.textContent = 'Reply';
-    replyButton.addEventListener('click', () => {
-        selectedCommentId = comment.id;
-        document.getElementById('commentText').focus();
-    });
-    return replyButton;
 }
 
 async function fetchAndDisplayCommentsForFocusPage() {
@@ -212,12 +216,17 @@ async function fetchAndDisplayCommentsForFocusPage() {
     commentsContainer.innerHTML = '';
 
     const response = await fetch(`/comments/comments/${articles[currentArticleIndex].id}`);
-    const comments = await response.json();
+    const allComments = await response.json();
+
+    // Use a separate variable for filtered comments
+    const topLevelComments = allComments.filter(comment => comment.parentID === null);
 
     const user = await getCurrentUser();
     const currentUserId = user.id;
 
-    comments.forEach(comment => {
+    topLevelComments.forEach(comment => {
+        // Since we're only dealing with top-level comments now, this check might be redundant
+        // unless you have additional logic that still requires it.
         if (!selectedCommentId || comment.parentID === selectedCommentId) {
             const commentElement = createCommentElement(comment, currentUserId);
             commentsContainer.appendChild(commentElement);
@@ -225,15 +234,29 @@ async function fetchAndDisplayCommentsForFocusPage() {
     });
 }
 
-window.onload = async function() {
+document.addEventListener('DOMContentLoaded', async function() {
     await fetchAndDisplayArticle();
+    const user = await getCurrentUser();
+    fetch(`perspectives/get_perspectives/${user.id}`)
+        .then(response => response.json())
+        .then(perspectives => {
+            const dropdown = document.getElementById('perspectiveSelect');
+            perspectives.forEach(perspective => {
+                const option = document.createElement('option');
+                option.value = perspective.perspectiveId;
+                option.textContent = perspective.perspectiveName;
+                dropdown.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching perspectives:', error));
+
     document.getElementById('submitComment').addEventListener('click', async function(event) {
         event.preventDefault();
         const commentText = document.getElementById('commentText').value;
         const perspectiveId = document.getElementById('perspectiveSelect').value;
         await submitComment(commentText, perspectiveId);
     });
-};
+});
 
 function navigateArticles(offset) {
     const newIndex = currentArticleIndex + offset;

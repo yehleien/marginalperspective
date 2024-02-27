@@ -10,40 +10,42 @@
     <header>
         <div class="logo">
             <div class="logo-icon">MP</div>
-            <h1>Marginal Perspective</h1>
         </div>
         <nav>
             <a href="home.html" class="header-link">Home</a>
             <a href="account.html" class="header-link">Account</a>
             <a href="focus.html" class="header-link">Focus</a>
             <a href="index.html" class="header-link">Logout</a>
+            <a href="submit.html" class="header-link">Submit</a>
         </nav>
     </header>
 
     <div class="grid-container-full-width">
         <section id="articlesList" class="articles-full-width">
-            <form id="articleForm">
-                <input type="url" id="articleUrl" placeholder="Article URL">
-                <button type="submit">Submit Article</button>
-            </form>
-            <button id="scrapeArticles">Scrape Articles</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Submit Date</th>
-                        <th>Action</th>
-                        <th>Source</th>
-                        <th>Comments Count</th>
-                        <th>Most Common Perspective</th>
-                        <th>Total Votes</th>
-                        <th>View in Focus</th>
-                    </tr>
-                </thead>
-                <tbody id="articlesBody">
-                    <!-- Articles will be dynamically loaded here -->
-                </tbody>
-            </table>
+            <div id="articlesContainer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Submit Date</th>
+                            <th>Type</th>
+                            <th>Action</th>
+                            <th>Source</th>
+                            <th>Comments Count</th>
+                            <th>Most Common Perspective</th>
+                            <th>Total Votes</th>
+                            <th>View in Focus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articlesBody">
+                        <!-- Articles will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="paginationButtons">
+                <button id="prevPageButton">Previous</button>
+                <button id="nextPageButton">Next</button>
+            </div>
         </section>
     </div>
 

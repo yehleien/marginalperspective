@@ -4,7 +4,16 @@
     padding: 0;
     box-sizing: border-box;
 }
+#articlesContainer {
+    max-height: calc(100vh - 100px); /* Adjust based on your header/footer size */
+    overflow-y: auto; /* Enables scrolling within the container */
+}
 
+#paginationButtons {
+    text-align: center;
+    padding: 20px;
+    display: none; /* Initially hidden */
+}
 html, body {
     height: 100%;
     font-family: 'Arial', sans-serif;
@@ -183,4 +192,62 @@ input[type="checkbox"] {
 
 .article-title, .vote-arrows {
     text-align: center; /* Center align article title and vote arrows */
+}
+
+/* General table styles */
+table {
+    width: 90%; /* Adjust the width as needed */
+    margin: 20px auto; /* Center the table with automatic margins and add some space around it */
+    border-collapse: collapse; /* Collapse borders for a cleaner look */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
+}
+
+/* Table headers and cells styles */
+th, td {
+    border: 1px solid #ddd; /* Add a light border for definition */
+    text-align: left; /* Align text to the left; change as needed */
+    padding: 8px; /* Add some padding for a less cramped look */
+}
+
+/* Header row styles */
+th {
+    background-color: #f2f2f2; /* A light background color for the header row */
+    color: #333; /* Dark text for contrast */
+}
+
+/* Improve the look of the table header (th elements) */
+thead th {
+    text-align: center; /* Center the text in the header */
+    font-weight: bold; /* Make the header text bold */
+}
+
+/* Add zebra striping for rows */
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Light background for odd rows */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #ffffff; /* White background for even rows */
+}
+
+/* Style for the 'View in Focus' buttons */
+.button-view-in-focus {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 10px 20px; /* Top/bottom and left/right padding */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* No underline */
+    display: inline-block; /* Allow it to sit inline with other elements */
+    font-size: 16px; /* Set the font size */
+    margin: 4px 2px; /* Margins around the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    border-radius: 4px; /* Rounded corners */
+}
+
+/* Responsive table: Ensure table does not exceed the width of the screen */
+@media screen and (max-width: 600px) {
+    table {
+        width: 100%; /* Full width on smaller screens */
+    }
 }

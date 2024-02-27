@@ -87,17 +87,41 @@ router.post('/submit_comment', async (req, res) => {
 
     try {
         // Validate input data
-        if (!articleId || !commentText || !userId) {
+        if (!articleId || !commentText || !userId || !perspectiveId) {
             return res.status(400).send('Missing required fields');
         }
 
-        // Create the comment with parentID (if provided)
+        // Fetch the perspective name for the new comment's perspectiveId
+        const newCommentPerspective = await Perspective.findByPk(perspectiveId);
+        if (!newCommentPerspective) {
+            return res.status(404).send('Perspective not found.');
+        }
+
+        // If there's a parentID, verify the perspective names match
+        if (parentID) {
+            const parentComment = await Comment.findByPk(parentID, {
+                include: [{
+                    model: Perspective,
+                    as: 'Perspective'
+                }]
+            });
+            if (!parentComment) {
+                return res.status(404).send('Parent comment not found.');
+            }
+            if (!parentComment.Perspective || newCommentPerspective.perspectiveName !== parentComment.Perspective.perspectiveName) {
+                return res.status(403).send('Cannot reply to a comment from a different perspective.');
+            }
+            // Increment the parent's replyCount
+            await Comment.increment('replyCount', { where: { id: parentID } });
+        }
+
+        // Create the comment with the validated perspective name and parentID (if provided)
         const newComment = await Comment.create({
             text: commentText,
             articleId: articleId,
             userId: userId,
-            perspectiveId: perspectiveId || null, // If perspectiveId is not provided, set it to null
-            parentID: parentID || null // Handle parentID, setting it to null if not provided
+            perspectiveId: perspectiveId, // This is still needed for record-keeping
+            parentID: parentID || null
         });
 
         newComment.upvotes = 0;
