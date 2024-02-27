@@ -4,135 +4,50 @@
     padding: 0;
     box-sizing: border-box;
 }
-table {
-    width: calc(100% - 40px); /* Adjusted width to account for padding */
-    border-collapse: collapse;
-    margin: 20px; /* Added padding around the table */
-  }
-  
-  table, th, td {
-    border: 1px solid black;
-  }
-  
-  th, td {
-    padding: 15px;
-    text-align: left;
-  }
+
 html, body {
     height: 100%;
     font-family: 'Arial', sans-serif;
     background-color: #f0f0f0;
 }
-header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-#articlesBody tr.selected {
-    background-color: #34b1db; /* Light blue */
-}
-h1 {
-    margin-bottom: 1rem;
-}
-.container {
-    display: flex;
-    flex-direction: row;
-}
 
-.articles-column {
-    flex: 1;
-    order: 1;
-}
-
-.article-display-column {
-    flex: 2;
-    order: 2;
-    display: flex;
-    flex-direction: column;
-}
-
-#articleFrame {
-    flex: 1;
-}
-
-.comment-form-column {
-    flex: 1;
-    order: 2; /* This will place the comment form on the left */
-}
-
-.comments-column {
-    order: 1; /* This will place the comments on the right */
-}
-
-nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-}
 /* Header Styles */
 header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
+    background-color: #add8e6; /* Light blue background */
+    color: black; /* Change text color to black */
+    padding: 0.5rem 1rem; /* Adjust padding */
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: space-between; /* Align items to the sides */
+    align-items: center;
 }
 
 nav {
-    width: 100%;
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    gap: 20px; /* Add space between navigation links */
 }
 
 .header-link {
-    color: white;
+    color: black; /* Change link color to black */
     text-decoration: none;
-    margin: 0 1rem;
+    font-weight: bold; /* Make the font bold */
 }
-
-.center-container {
+.logo {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 10px; /* Space between logo icon and text */
 }
-
-.sort-buttons {
+.logo-icon {
+    width: 30px; /* Logo icon width */
+    height: 30px; /* Logo icon height */
+    background-color: white; /* Background color of the logo icon */
     display: flex;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+    font-weight: bold; /* Make the MP text bold */
+    border: 1px solid black; /* Border around the logo icon */
 }
 
-.sort-button {
-    padding: 10px 20px;
-    font-size: 1.2em;
-}
-
-.articles-table {
-    width: calc(100% - 40px); /* Adjusted width to account for padding */
-    border-collapse: collapse;
-}
-
-.articles-table th, .articles-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.articles-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.center-text {
-    text-align: center;
-}
-
-/* Main container with flexbox for 3 columns */
+/* Main container with flexbox for layout */
 .container {
     display: flex;
     flex-wrap: wrap;
@@ -144,122 +59,44 @@ nav {
 .articles-column,
 .comments-column,
 .comment-form-column {
-    flex-basis: calc(33.333% - 20px); /* Subtracting the gap from the flex-basis */
     border: 1px solid #ddd;
     background-color: #fff;
     padding: 10px;
     overflow-y: auto; /* Scrollable columns */
-    height: 800px; /* Fixed height, or you can make it responsive with vh */
 }
 
-/* Comment form styles */
-#commentForm,
-#submitArticleForm {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#commentInput, 
-#perspectiveSelect {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-#commentForm button,
-#ArticleForm button {
-    padding: 10px;
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-#commentForm button:hover {
-    background-color: #003d82;
-}
-
-/* Pagination styles */
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.pagination button {
-    padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.pagination button.active,
-.pagination button:hover {
-    background-color: #0056b3;
-    color: white;
-}
-
-/* Article and comment styles */
-.article-item,
+/* Comment styles */
 .comment-item {
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 20px; /* Adjust spacing between comments */
 }
 
-.article-item:last-child,
-.comment-item:last-child {
-    border-bottom: none;
-}
-
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-}
-
-tr:hover {
-    background-color: #f2f2f2;
-}
-
-th {
-    background-color: #333;
-    color: white;
-}
-
-tr.selected {
-    background-color: #ddd; /* Style for the selected article */
-}
-
-/* Pagination styles */
-.pagination {
+.comment-header {
     display: flex;
-    justify-content: center;
-    gap: 5px;
-    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Space between header and text */
 }
 
-.pagination button {
-    padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    cursor: pointer;
+.perspective {
+    font-weight: bold;
+    font-size: 1.5em; /* Adjust size as needed */
 }
 
-.pagination button.active,
-.pagination button:hover {
-    background-color: #0056b3;
-    color: white;
+.comment-text {
+    margin-top: 10px; /* Adjust spacing between the perspective and the comment text */
+}
+
+.view-replies {
+    margin-left: auto; /* Pushes the button to the right */
+}
+
+.comment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px; /* Space between text and footer */
 }
 
 /* Responsive design adjustments */
@@ -346,4 +183,62 @@ input[type="checkbox"] {
 
 .article-title, .vote-arrows {
     text-align: center; /* Center align article title and vote arrows */
+}
+
+/* General table styles */
+table {
+    width: 90%; /* Adjust the width as needed */
+    margin: 20px auto; /* Center the table with automatic margins and add some space around it */
+    border-collapse: collapse; /* Collapse borders for a cleaner look */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
+}
+
+/* Table headers and cells styles */
+th, td {
+    border: 1px solid #ddd; /* Add a light border for definition */
+    text-align: left; /* Align text to the left; change as needed */
+    padding: 8px; /* Add some padding for a less cramped look */
+}
+
+/* Header row styles */
+th {
+    background-color: #f2f2f2; /* A light background color for the header row */
+    color: #333; /* Dark text for contrast */
+}
+
+/* Improve the look of the table header (th elements) */
+thead th {
+    text-align: center; /* Center the text in the header */
+    font-weight: bold; /* Make the header text bold */
+}
+
+/* Add zebra striping for rows */
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Light background for odd rows */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #ffffff; /* White background for even rows */
+}
+
+/* Style for the 'View in Focus' buttons */
+.button-view-in-focus {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 10px 20px; /* Top/bottom and left/right padding */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* No underline */
+    display: inline-block; /* Allow it to sit inline with other elements */
+    font-size: 16px; /* Set the font size */
+    margin: 4px 2px; /* Margins around the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    border-radius: 4px; /* Rounded corners */
+}
+
+/* Responsive table: Ensure table does not exceed the width of the screen */
+@media screen and (max-width: 600px) {
+    table {
+        width: 100%; /* Full width on smaller screens */
+    }
 }
