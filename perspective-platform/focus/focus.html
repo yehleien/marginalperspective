@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - Marginal Perspective</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="focus.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/home">
+            <img src="../assets/favicon.png" alt="Website Logo">
+        </div>
+        <nav>
+            <a href="/home" class="header-link">Home</a>
+            <a href="/account" class="header-link">Account</a>
+            <a href="/focus" class="header-link">Focus</a>
+            <a href="/submit" class="header-link">Submit</a>
+            <a href="/communities" class="header-link">Communities</a>
+            <a href="/index" class="header-link">Logout</a>
+
+        </nav>
+    </header>
+    <div class="article-filter-toolbar">
+        <button id="randomArticleButton">Random Article</button>
+        <button id="latestArticleButton">Latest</button>
+        <button id="popularArticleButton">Most Popular</button>
+        <button id="mostViewedArticleButton">Most Viewed</button>
+        <button id="oldestArticleButton">Oldest</button>
+        <!-- Add more buttons as needed -->
+    </div>
+    <div class="article-context-toolbar">
+        <span class="article-date">Posted: Jan 1, 2023</span>
+        <button id="readArticleButton">Read Article</button>
+        <span class="article-word-length">Word Length: 1200</span>
+        <span class="article-bias">Bias: Moderate</span>
+        <span class="article-journalist">By: Journalist Name</span>
+        <!-- Add more context items as needed -->
+    </div>
+    <div class="toolbar">
+        <button id="prevArticle" class="toolbar-button">←</button>
+        <h2 id="articleTitle" class="toolbar-title">Article Title</h2>
+        <button id="nextArticle" class="toolbar-button">→</button>
+    </div>
+    <div class="main-content">
+        <div class="left-section">
+            <div class="comment-section">
+                <div class="comment-form">
+                    <select id="perspectiveSelect" name="perspectiveId">
+                        <!-- Options will be dynamically loaded here -->
+                    </select>
+                    <textarea id="commentText" placeholder="Write your comment here..."></textarea>
+                    <input type="hidden" id="parentIDInput" name="parentID" value="">
+                    <button id="submitComment">Submit Comment</button>
+                </div>
+            </div>
+        </div>
+        <div class="comment-filter-toolbar">
+            <button id="latestCommentButton">Latest</button>
+            <button id="popularCommentButton">Most Popular</button>
+            <button id="controversialCommentButton">Controversial</button>
+            <button id="oldestCommentButton">Oldest</button>
+            <!-- Add more buttons as needed -->
+        </div>
+        <div class="comments-container" id="commentsContainer">
+            <!-- Comments with threading go here -->
+            <div class="comment-item">
+                <div class="vote-container"> <!-- Orange container -->
+                    <!-- Vote buttons go here -->
+                </div>
+                <div class="content-container"> <!-- Main content container -->
+                    <div class="perspective-container"> <!-- Blue container -->
+                        <span class="perspective">Default Perspective</span>
+                    </div>
+                    <div class="comment-text-container"> <!-- Green container -->
+                        <p class="comment-text">Comment content goes here...</p>
+                    </div>
+                    <div class="interaction-container"> <!-- Container for interaction buttons -->
+                        <div class="view-replies-container"> <!-- Purple container -->
+                            <button class="view-replies">View replies (null)</button>
+                        </div>
+                        <div class="reply-button-container"> <!-- Red container -->
+                            <!-- Reply button goes here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="focus.js"></script>
+</body>
+</html>

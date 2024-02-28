@@ -1,0 +1,188 @@
+.comments-column {
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #ffffff;
+}
+
+.comment-item {
+    position: relative;
+    border: 1px solid #d7dadc;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+}
+
+.comment-header {
+    background-color: #dae0e6;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #d7dadc;
+}
+
+.vote-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1c1c1c;
+}
+
+.vote-button.voted {
+    font-weight: bold;
+}
+
+.vote-button.upvoted {
+    color: #ff4500;
+}
+
+.vote-button.downvoted {
+    color: #7193ff;
+}
+
+.perspective {
+    display: inline-block;
+    background-color: #dae0e6;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+
+.votes-display {
+    margin-right: 10px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+}
+
+.toolbar-button {
+    flex: 0 0 50px; /* Do not grow or shrink, set basis to 50px */
+    width: 50px;
+    height: 50px; /* Adjust height to match the article title */
+}
+
+.toolbar-title {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0 50px; /* Add margin to ensure buttons do not overlap the title */
+}
+
+#articleTitle {
+    line-height: 50px; /* Match the height of the buttons */
+}
+
+#randomArticleButton {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comment-form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 8px;
+    align-items: start;
+}
+
+#perspectiveSelect {
+    grid-column: 1;
+    width: auto; /* Adjust width as needed */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#commentText {
+    grid-column: 1 / span 2; /* Span across both columns */
+    width: 100%;
+    height: 100px;
+    padding: 8px;
+    margin-top: 8px; /* Space between the dropdown and the comment box */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+#submitComment {
+    grid-column: 1;
+    width: auto; /* Match the width of the perspectiveSelect dropdown */
+    padding: 10px 0;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.article-filter-toolbar,
+.comment-filter-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    margin-bottom: 16px; /* Space between the toolbar and the next section */
+    border-bottom: 1px solid #ddd; /* Optional separator */
+}
+
+.article-filter-toolbar button,
+.comment-filter-toolbar button {
+    flex: 1; /* Each button will grow equally to fill the toolbar */
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 4px; /* Maintain a small margin between buttons */
+}
+
+/* Remove margin for the first and last buttons to align with the toolbar edges */
+.article-filter-toolbar button:first-child,
+.comment-filter-toolbar button:first-child {
+    margin-left: 0;
+}
+
+.article-filter-toolbar button:last-child,
+.comment-filter-toolbar button:last-child {
+    margin-right: 0;
+}
+.article-context-toolbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 16px; /* Space between the context toolbar and the next section */
+    background-color: #e9ecef; /* Different background to distinguish from filter toolbar */
+    border-radius: 4px; /* Optional rounded corners */
+}
+
+.article-context-toolbar > * {
+    margin: 0 8px; /* Spacing between context items */
+    padding: 4px 8px; /* Padding for better readability */
+}
+
+.article-context-toolbar button {
+    padding: 8px 16px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.article-context-toolbar span {
+    background-color: #f2f2f2; /* Light background for the span elements */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}

@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "install",
+			"path": "perspective-platform",
+			"group": "clean",
+			"problemMatcher": [],
+			"label": "npm: install - perspective-platform",
+			"detail": "install dependencies from package"
+		}
+	]
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - Marginal Perspective</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="account.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/home">
+            <img src="../assets/favicon.png" alt="Website Logo">
+        </div>
+        <nav>
+            <a href="/home" class="header-link">Home</a>
+            <a href="/account" class="header-link">Account</a>
+            <a href="/focus" class="header-link">Focus</a>
+            <a href="/submit" class="header-link">Submit</a>
+            <a href="/communities" class="header-link">Communities</a>
+            <a href="/index" class="header-link">Logout</a>
+
+        </nav>
+    </header>
+    <h2 id="welcomeMessage"></h2>
+
+    <button id="addPerspectiveButton">Add a perspective</button>
+    <table id="perspectivesTable">
+        <thead>
+            <tr>
+                <th>Perspective Name</th>
+                <th>Last Updated</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="perspectivesBody">
+            <!-- Perspectives will be dynamically loaded here -->
+        </tbody>
+    </table>
+
+<!-- Update form -->
+<form id="updatePerspectiveForm" style="display: none;">
+    <input type="hidden" id="updatePerspectiveId">
+    <input type="text" id="updatePerspectiveName" placeholder="New Perspective Name">
+    <!-- Dropdown for perspective type, populated by account.js -->
+    <div id="perspectiveTypeDropdown"></div>
+    <button type="submit">Update Perspective</button>
+</form>
+
+    <script src="account.js"></script>
+</body>
+</html>

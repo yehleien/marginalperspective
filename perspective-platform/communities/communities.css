@@ -1,0 +1,18 @@
+/* Add this to your existing styles.css or create a new CSS file and link it appropriately */
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px; /* Adjust width as needed */
+    background-color: #f0f0f0; /* Light grey background */
+    height: 100vh; /* Full height of the viewport */
+    overflow-y: auto; /* Enable scrolling if the list is long */
+    padding: 20px;
+}
+
+.content {
+    flex-grow: 1; /* Takes up the remaining space */
+    padding: 20px;
+}

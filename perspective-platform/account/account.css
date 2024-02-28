@@ -1,0 +1,43 @@
+/* account.css */
+
+/* Styles for the perspectives table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+
+/* Styles for the update form */
+#updatePerspectiveForm {
+    display: flex;
+    flex-direction: row ;
+    gap: 10px;
+}
+
+#updatePerspectiveName {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 80%;
+}
+
+#updatePerspectiveForm button {
+    padding: 10px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#updatePerspectiveForm button:hover {
+    background-color: #003d82;
+}
