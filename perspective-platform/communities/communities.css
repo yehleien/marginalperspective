@@ -1,18 +1,70 @@
 /* Add this to your existing styles.css or create a new CSS file and link it appropriately */
 
-.container {
-    display: flex;
+#sidebarTableContainer {
+    width: 250px; /* Adjust based on your layout */
+    height: 100vh; /* Full height */
+    overflow-y: auto; /* Enable scrolling for overflow */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Soft shadow around the sidebar */
+    border-radius: 10px; /* Rounded corners for the sidebar */
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background color */
+    float: left;
 }
 
-.sidebar {
-    width: 200px; /* Adjust width as needed */
-    background-color: #f0f0f0; /* Light grey background */
+/* New Navigation Items */
+#sidebarNavigation {
+    margin-bottom: 20px; /* Space between navigation items and the table */
+}
+
+.sidebar-nav-item {
+    display: block; /* Make each item take its own line */
+    padding: 10px;
+    text-decoration: none; /* Remove underline from links */
+    color: #333; /* Dark text color for contrast */
+    border-radius: 5px; /* Rounded corners for each item */
+    margin: 5px 0; /* Margin between items */
+    background-color: #f0f0f0; /* Light background color */
+    text-align: center; /* Center text */
+}
+
+.sidebar-nav-item:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+}
+
+/* Styles for both My Communities and All Communities tables */
+#myCommunitiesTable, #allCommunitiesTable {
+    width: 100%; /* Ensure the table takes full width of its container */
+    border-collapse: collapse; /* Collapse borders to avoid any extra spacing */
+}
+
+#myCommunitiesTable th, 
+#allCommunitiesTable th {
+    text-align: left;
+    padding: 8px; /* Adjust padding as needed */
+    border: none; /* Ensure no borders are causing extra columns */
+}
+
+#mainContainer {
+    margin-left: 250px; /* Set margin to accommodate the sidebar width */
+    padding: 20px; /* Add padding for spacing */
     height: 100vh; /* Full height of the viewport */
-    overflow-y: auto; /* Enable scrolling if the list is long */
-    padding: 20px;
+    width: calc(100% - 250px); /* Calculate width based on sidebar width */
 }
 
-.content {
-    flex-grow: 1; /* Takes up the remaining space */
-    padding: 20px;
+#myCommunitiesTable tr:nth-child(odd) td,
+#allCommunitiesTable tr:nth-child(odd) td {
+    background-color: #ffffff; /* White for every other row */
+}
+
+#myCommunitiesTable tr:hover td,
+#allCommunitiesTable tr:hover td {
+    background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+#myCommunitiesTable td, #allCommunitiesTable td {
+    width: 100%; /* Set the cell to take the full width of the table */
+    padding: 8px; /* Adjust padding as needed */
+    margin: 0; /* Ensure no margin is causing extra space */
+    border: none; /* Ensure no borders are causing extra columns */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }

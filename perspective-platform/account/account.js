@@ -23,20 +23,19 @@ async function fetchAndDisplayPerspectives() {
         const user = await userResponse.json();
         const userId = user.id;
 
-        // Fetch the perspectives
-        const response = await fetch(`/perspectives/get_perspectives/${userId}`, {
+        // Fetch the user's perspectives by matching UserPerspective with Perspective
+        const response = await fetch(`/UserPerspective/get_user_perspectives/${userId}`, {
             credentials: 'include' // include credentials to send the session cookie
         });
-        const perspectives = await response.json();
+        const userPerspectives = await response.json();
         const perspectivesBody = document.getElementById('perspectivesBody');
-        perspectivesBody.innerHTML = perspectives.map(perspective => `
+        perspectivesBody.innerHTML = userPerspectives.map(userPerspective => `
             <tr>
-                <td>${perspective.perspectiveName}</td>
-  
-                <td>${new Date(perspective.updatedAt).toLocaleString()}</td>
-                <td>${perspective.type}</td>
+                <td>${userPerspective.perspectiveName}</td>
+                <td>${new Date(userPerspective.updatedAt).toLocaleString()}</td>
+                <td>${userPerspective.type}</td>
                 <td>
-                    <button onclick="showUpdateForm(${perspective.perspectiveId}, '${perspective.perspectiveName}', '${perspective.type}')">Update</button>
+                    <button onclick="showUpdateForm(${userPerspective.perspectiveId}, '${userPerspective.perspectiveName}', '${userPerspective.type}')">Update</button>
                 </td>
             </tr>
         `).join('');
@@ -150,25 +149,35 @@ document.getElementById('updatePerspectiveForm').addEventListener('submit', func
 
     updatePerspective(perspectiveId, name, type); // Pass the type to the update function
 });
-document.getElementById('addPerspectiveButton').addEventListener('click', function() {
+document.getElementById('addPerspectiveButton').addEventListener('click', async function() {
     const perspectivesTable = document.getElementById('perspectivesTable');
-
-    // Create a new row
     const row = perspectivesTable.insertRow();
 
-    // Create a cell for the perspective name
-    const nameCell = row.insertCell();
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.placeholder = 'Enter perspective name';
-    nameCell.appendChild(nameInput);
+    // Create a cell for the perspective type dropdown
+    const typeCell = row.insertCell();
+    const typeSelect = document.createElement('select');
+    typeCell.appendChild(typeSelect);
+
+    // Fetch and populate perspective types
+    try {
+        const response = await fetch('/perspectives/get_all_perspectives');
+        const perspectiveTypes = await response.json();
+        perspectiveTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.perspectiveId; // Assuming each type has a unique ID
+            option.textContent = type.perspectiveName; // Assuming the name of the perspective type is what you want to display
+            typeSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching perspective types:', error);
+    }
 
     // Create a cell for the "Save" button
     const saveCell = row.insertCell();
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Save';
     saveButton.addEventListener('click', async function() {
-        const perspectiveName = nameInput.value;
+        const selectedPerspectiveId = typeSelect.value; // Get the selected perspective type
 
         // Fetch the current user to get the userId
         const userResponse = await fetch('/account/current', {
@@ -178,12 +187,12 @@ document.getElementById('addPerspectiveButton').addEventListener('click', functi
         const userId = user.id;
 
         // Add the new perspective to the database
-        const response = await fetch('/perspectives/add_perspective', {
+        const response = await fetch('/UserPerspective/add_user_perspective', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ perspectiveName, userId }) // Include userId here
+            body: JSON.stringify({ perspectiveId: selectedPerspectiveId, userId }) // Include userId and selected perspective type here
         });
 
         const data = await response.json();
@@ -198,3 +207,5 @@ document.getElementById('addPerspectiveButton').addEventListener('click', functi
     });
     saveCell.appendChild(saveButton);
 });
+
+

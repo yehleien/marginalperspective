@@ -10,17 +10,18 @@ const axios = require('axios'); // Added axios for web scraping
 const cheerio = require('cheerio'); // Added cheerio for web scraping
 
 // Model definitions
-const { User, Article, Comment, Perspective, Vote } = require('./models/index');
+const { User, Article, Comment, Perspective, Vote, UserPerspective } = require('./models/index');
 
 // Debugging
-console.log("Models defined: User, Article, Comment, Perspective");
+console.log("Models defined: User, Article, Comment, Perspective, UserPerspective");
 
 // Route modules using dependency injection
 const commentRoutes = require('./routes/comments');
 const articleRoutes = require('./routes/articles');
 const perspectiveRoutes = require('./routes/perspectives');
+const UserPerspectiveRoutes=require('./routes/UserPerspective');
 
-console.log("Routes defined: commentRoutes, articleRoutes, perspectiveRoutes");
+console.log("Routes defined: commentRoutes, articleRoutes, perspectiveRoutes, UserPerspective Routes");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ console.log("Express app setup complete");
 app.use('/comments', commentRoutes);
 app.use('/articles', articleRoutes);
 app.use('/perspectives', perspectiveRoutes);
+app.use('/UserPerspective', UserPerspectiveRoutes);
 
 // Added new route for fetching article content
 app.get('/articles/content/:url', async (req, res) => {

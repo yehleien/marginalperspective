@@ -24,15 +24,41 @@
 
         </nav>
     </header>
-    <div class="container">
-        <aside class="sidebar">
-            <ul id="perspectivesList">
-                <!-- Perspectives will be loaded here -->
-            </ul>
-        </aside>
-        <main class="content">
-            <!-- Community content will go here -->
-        </main>
+    <div id="sidebarTableContainer">
+            <!-- New Navigation Items -->
+            <div id="sidebarNavigation">
+                <a href="#" class="sidebar-nav-item" onclick="fetchAndDisplayPosts('new')">New</a>
+                <a href="#" class="sidebar-nav-item" onclick="fetchAndDisplayPosts('hot')">Hot</a>
+                <a href="#" class="sidebar-nav-item" onclick="fetchAndDisplayPosts('top')">Top</a>
+                <a href="#" class="sidebar-nav-item" onclick="fetchAndDisplayPosts('controversial')">Controversial</a>
+                <button id="submitPostButton" class="sidebar-nav-item">Submit Post</button>
+            </div>
+    
+    <!-- My Communities Section -->
+    <div class="community-section">
+        <div class="section-header">My Communities</div>
+        <table id="myCommunitiesTable">
+
+            <tbody id="myCommunitiesBody" class="section-body">
+                <!-- User's perspectives will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- All Communities Section -->
+    <div class="community-section">
+        <div class="section-header">All Communities</div>
+        <table id="allCommunitiesTable">
+            <tbody id="allCommunitiesBody" class="section-body">
+                <!-- List of all perspectives will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <!-- This will be initially hidden and will be placed in the main container -->
+    <div id="mainContainer">
+    
     </div>
     <script src="communities.js"></script>
 </body>

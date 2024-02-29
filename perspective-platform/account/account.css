@@ -2,7 +2,7 @@
 
 /* Styles for the perspectives table */
 table {
-    width: 100%;
+    width: 90%;
     border-collapse: collapse;
 }
 
@@ -40,4 +40,41 @@ th, td {
 
 #updatePerspectiveForm button:hover {
     background-color: #003d82;
+}
+
+#addPerspectiveSection {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#addPerspectiveForm {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+#addPerspectiveForm label {
+    margin-bottom: 10px;
+}
+
+#addPerspectiveForm select {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#addPerspectiveForm button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#addPerspectiveForm button:hover {
+    background-color: #0056b3;
 }

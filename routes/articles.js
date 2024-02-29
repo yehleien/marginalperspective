@@ -1,18 +1,20 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { Article } = require('../models');
+const { Article, Perspective } = require('../models');
 const router = express.Router();
 
 router.get('/get_latest', async (req, res) => {
     try {
-        const index = req.query.index || 0;
+        const index = parseInt(req.query.index) || 0;
         const article = await Article.findAll({
+            attributes: ['id', 'url', 'title', 'submitDate', 'scope', 'content', 'perspectiveId'], // Specify fields to return
             order: [['submitDate', 'DESC']],
             offset: index,
-            limit: 1
+            limit: 27,
+            include: [{ model: Perspective }] // Include Perspective details if needed
         });
-        res.json(article[0]);
+        res.json(article[0] || {});
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -21,15 +23,33 @@ router.get('/get_latest', async (req, res) => {
 
 router.post('/submit_article', async (req, res) => {
     try {
-        const { url } = req.body;
+        const { url, scope, content, perspectiveId, title: providedTitle } = req.body;
         const submitDate = new Date();
 
-        // Fetch the title
-        const { data } = await axios.get(url);
-        const $ = cheerio.load(data);
-        const title = $('title').text();
+        // Validate perspectiveID
+        if (perspectiveId) {
+            const perspectiveExists = await Perspective.findByPk(perspectiveId);
+            if (!perspectiveExists) {
+                return res.status(400).json({ message: 'Invalid perspectiveID' });
+            }
+        }
 
-        const newArticle = await Article.create({ url, submitDate, title });
+        let title = providedTitle;
+        if (url) {
+            // Fetch the title if URL is provided and no title is provided
+            if (!title) {
+                const { data } = await axios.get(url);
+                const $ = cheerio.load(data);
+                title = $('title').text();
+            }
+        } else if (!title) {
+            // If no URL and no title provided, return an error
+            return res.status(400).json({ message: 'A title is required if no URL is provided' });
+        }
+
+        // Additional validations for other fields can be added here
+
+        const newArticle = await Article.create({ url, title, submitDate, scope, content, perspectiveId });
         res.json(newArticle);
     } catch (err) {
         console.error(err);

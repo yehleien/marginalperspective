@@ -25,6 +25,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'webpage'
+    },
+    scope: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'webpage'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false
+        },
+    perspectiveId: {
+      type: DataTypes.INTEGER,
+      allowNull: false    
     }
   }, {
     timestamps: false, // Disable automatic timestamp fields (createdAt, updatedAt)
@@ -35,6 +48,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'comments',
     });
+    // Inside your model definition or a separate association file
+Article.belongsTo(models.Perspective, {foreignKey: 'perspectiveId'});
+models.Perspective.hasMany(Article, {foreignKey: 'perspectiveId'});
   };
 
   return Article;

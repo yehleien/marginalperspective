@@ -26,23 +26,26 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
 });
 
-  Perspective.associate = function(models) {
-    Perspective.belongsTo(models.User, {
-      foreignKey: 'userId',
-      as: 'user',
-    },
-    );
+Perspective.associate = function(models) {
+  // Association with User through UserPerspective
+  Perspective.belongsToMany(models.User, {
+    through: 'UserPerspective',
+    foreignKey: 'perspectiveId',
+    otherKey: 'userId'
+    });
+
+  // If you want a direct relationship between Perspective and User (not through UserPerspective), uncomment below
+  // Perspective.belongsTo(models.User, {
+  //   foreignKey: 'userId',
+  //   as: 'user',
+  // });
+
+  // Association with Comment
   Perspective.hasMany(models.Comment, {
     foreignKey: 'perspectiveId',
-    as: 'perspective',
+    as: 'comments', // Ensure this alias matches how you refer to it in queries
   });
-  Perspective.associate = function(models) {
-    Perspective.hasMany(models.Comment, {
-        foreignKey: 'perspectiveId',
-        as: 'perspective'
-    });
-};
 };
 
-  return Perspective;
+return Perspective;
 };

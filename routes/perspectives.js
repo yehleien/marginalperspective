@@ -56,4 +56,21 @@ router.delete('/delete_perspective/:id', (req, res) => {
         });
 });
 
+
+
+  // Route to get all perspectives
+router.get('/get_all_perspectives', (req, res) => {
+    Perspective.findAll({
+        attributes: ['perspectiveId', 'perspectiveName', 'type', 'options'] // Adjust attributes as needed
+    })
+    .then(perspectives => {
+        res.json(perspectives);
+    })
+    .catch(error => {
+        console.error('Error fetching perspectives:', error);
+        res.status(500).json({ success: false, error: 'Server error' });
+    });
+});
+
+
 module.exports = router;
